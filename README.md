@@ -8,3 +8,7 @@ Funcionalidades:
 - partilhar perfis de contas com outras pessoas;
 - organização de contas por categorias;
 - visualização de estatísticas de contas.
+
+Uma versão modernizada da aplicação Gestão de contas (https://github.com/miguelrachao/gestaodecontas)
+
+2025
