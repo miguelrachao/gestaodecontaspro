@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using GestaoDeContasPRO.Models;
+using GestaoDeContasPRO.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestaoDeContasPRO.Controllers
