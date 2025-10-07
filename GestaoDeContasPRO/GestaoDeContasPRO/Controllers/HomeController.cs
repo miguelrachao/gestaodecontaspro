@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using GestaoDeContasPRO.Models;
 using GestaoDeContasPRO.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestaoDeContasPRO.Controllers
@@ -8,26 +9,28 @@ namespace GestaoDeContasPRO.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly UserRepository _userRepo;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, UserRepository userRepo)
         {
             _logger = logger;
+            _userRepo = userRepo;
         }
 
+     
         public IActionResult Index()
         {
-            return View();
+            User user = new User();
+            user.Email = "miguel_rachao.96@hotmail.com";
+                
+            _userRepo.GetByEmail(ref user);
+
+            return View(user);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }
