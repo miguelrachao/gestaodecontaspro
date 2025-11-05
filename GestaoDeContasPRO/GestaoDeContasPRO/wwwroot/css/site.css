@@ -20,3 +20,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.form-control:focus {
+    box-shadow: none !important;
+    border-color: #aaa !important;
+}
+
+.btn:focus {
+    box-shadow: none !important;
+}
+
+.form-blocked {
+    pointer-events: none; 
+    opacity: 0.6;
+}

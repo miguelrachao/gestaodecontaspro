@@ -1,1 +1,80 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Login";
+}
+<div class="d-flex justify-content-center">
+    <div class="form-container" style="width:100%; max-width: 500px;">
+        <form class="minimal-form ms-4 me-4" id="LoginForm" name="LoginForm" autocomplete="off">
+            <h2 class="form-title text-center pt-5 pb-4">Bem vindo de volta!</h2>
+            <div class="mb-4">
+                <input type="text" class="form-control" placeholder="Email" id="Email" name="Email">
+            </div>
+            <div class="mb-4">
+                <input type="number" class="form-control" placeholder="Código de autenticação" id="OtpCode" name="OtpCode" hidden>
+            </div>
+            <div class="text-center mb-4 p-1 rounded" hidden id="LoginInfo"></div>
+            <button type="submit" id="SubmitLogin" class="btn btn-primary mb-3 w-100 p-2 mb-5">Enviar código de autenticação</button>
+        </form>
+    </div>
+</div>
+<script>
+    jQuery(document).ready(function () {
+        jQuery('#LoginForm').submit(function () {
+            let email = document.getElementById("Email");
+            let otpCode = document.getElementById("OtpCode");
+            let submitLogin = document.getElementById("SubmitLogin");
+            let loginInfo = document.getElementById("LoginInfo");
+            if (email.value == "") {
+                LoginForm.Email.focus();
+                warningAlert("Por favor, preencha o email!");
+            }else if(!otpCode.hidden && otpCode.value == "") { 
+                LoginForm.OtpCode.focus();
+                warningAlert("Por favor, preencha o código de autenticação!");
+            }
+            else {
+                $('#LoginForm').addClass('form-blocked');
+                jQuery.ajax({
+                    type: "POST",
+                    url: baseUrl + "Account/Login",
+                    data: new FormData(document.getElementById("LoginForm")),
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    processData: false,
+                    success: function (data, textStatus, jqXHR) {
+                        if(otpCode.hidden){
+                            $('#LoginForm').removeClass('form-blocked');
+                            email.readOnly = true;
+                            otpCode.removeAttribute("hidden");
+                            loginInfo.className = 'text-center mb-4 p-1 rounded text-bg-success';
+                            loginInfo.innerHTML = "Código de autenticação enviado por email!";
+                            loginInfo.removeAttribute("hidden");
+                            submitLogin.textContent = "Login";
+                        }else{
+                            $('#LoginForm').addClass('form-blocked');
+                            loginInfo.hidden = true;
+                            submitLogin.textContent = "Sessão iniciada!";
+                            submitLogin.className = "btn btn-success mb-3 w-100 p-2 mb-5";
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 700);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        if(jqXHR.status == 404){
+                            loginInfo.className = 'text-center mb-4 p-1 rounded text-bg-danger';
+                            loginInfo.innerHTML = "Conta não encontrada!";
+                            loginInfo.removeAttribute("hidden");
+                        }else if(jqXHR.status == 403){
+                            loginInfo.className = 'text-center mb-4 p-1 rounded text-bg-danger';
+                            loginInfo.innerHTML = "Código de autenticação inválido!";
+                            loginInfo.removeAttribute("hidden");
+                        }else{
+                            errorAlert("Ocorreu um erro!");
+                        }
+                        $('#LoginForm').removeClass('form-blocked');
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>

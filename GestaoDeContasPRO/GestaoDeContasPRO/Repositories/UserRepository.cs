@@ -14,9 +14,10 @@ namespace GestaoDeContasPRO.Repositories
             _connStr = config.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
 
-        public bool GetByEmail(ref User user)
+        public bool GetByEmail(ref User user, ref bool error)
         {
             bool flag = false;
+            error = false;
 
             try
             {
@@ -39,9 +40,7 @@ namespace GestaoDeContasPRO.Repositories
                                 user.Id = (int)dr["id"];
                                 user.Name = dr["name"].ToString() ?? string.Empty;
                                 user.FavoriteProfileId = (int)dr["favorite_profile_id"];
-                                user.OtpCode = dr["otp_expiration"] == DBNull.Value ? null : (int)dr["otp_code"];
-                                user.OtpExpiration = dr["otp_expiration"] == DBNull.Value ? (DateTime?)null : (DateTime)dr["otp_expiration"];
-
+                            
                                 dr.Close();
 
                                 flag = true;
@@ -52,7 +51,7 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { }
+            catch { error = true; }
 
             return flag;
         }
@@ -85,6 +84,83 @@ namespace GestaoDeContasPRO.Repositories
             {
                 flag = false;
             }
+
+            return flag;
+        }
+
+        public bool ValidateOtp(ref User user, ref bool error)
+        {
+            bool flag = false;
+            error = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = "SELECT * FROM users WHERE email = @email AND otp_code = @otp_code AND otp_expiration > NOW()";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@email", user.Email);
+                        cmd.Parameters.AddWithValue("@otp_code", user.OtpCode);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                dr.Read();
+
+                                user.Id = (int)dr["id"];
+                                user.Name = dr["name"].ToString() ?? string.Empty;
+                                user.FavoriteProfileId = (int)dr["favorite_profile_id"];
+
+                                dr.Close();
+
+                                flag = true;
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch { error = true; }
+
+            return flag;
+        }
+
+        public bool HasAlreadyOtp(User user, ref bool error) {
+
+            bool flag = false;
+            error = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = "SELECT * FROM users WHERE email = @email AND otp_code != 0 AND otp_expiration > NOW()";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@email", user.Email);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                flag = true;
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch { error = true; }
 
             return flag;
         }
