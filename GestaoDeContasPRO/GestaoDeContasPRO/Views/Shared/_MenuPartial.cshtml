@@ -1,16 +1,20 @@
 ﻿<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-    
-    @{
-        if (User?.Identity?.IsAuthenticated == false)
-        {
-            <ul class="navbar-nav flex-grow-1">
+    <ul class="navbar-nav flex-grow-1">
+        <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Início</a>
+        </li>
+        @{
+            if (User?.Identity?.IsAuthenticated == false)
+            {
                 <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">Sobre</a>
                 </li>
-            </ul>
+            }
+
         }
        
-
+    </ul>
+    @{
         if (User?.Identity?.IsAuthenticated == true)
         {
             <ul class="nav align-items-end ms-auto">
