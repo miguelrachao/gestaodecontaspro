@@ -111,7 +111,7 @@ namespace GestaoDeContasPRO.Controllers
 
                                     if (_userRepo.UpdateOtp(user))
                                     {
-                                        _helpers.SendEmail(user.Email, "Gestão de contas - Autenticação: " + user.OtpCode, "O seu código de autenticação: " + user.OtpCode);
+                                        _helpers.SendEmail(user.Email, "Autenticação", "O seu código de autenticação: " + user.OtpCode);
 
                                         return Ok();
                                     }
@@ -152,6 +152,49 @@ namespace GestaoDeContasPRO.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult Register(User user)
+        {
+            if(user.Email != null && user.Email != string.Empty && user.Name != null && user.Name != string.Empty)
+            {
+                bool error = false;
+
+                if(_userRepo.GetByEmail(ref user, ref error))
+                {
+                    return StatusCode(409);
+                }
+                else
+                {
+                    if (error)
+                    {
+                        return StatusCode(500);
+                    }
+                    else
+                    {
+                        if (_userRepo.PostUser(user))
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            return StatusCode(500);
+                        }   
+                    }
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }           
         }
     }
 

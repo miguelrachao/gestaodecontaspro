@@ -56,6 +56,34 @@ namespace GestaoDeContasPRO.Repositories
             return flag;
         }
 
+        public bool PostUser(User user)
+        {
+            bool flag = true;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = "INSERT INTO users(name, email, otp_code, otp_expiration, favorite_profile_id) VALUES(@name, @email, 0, NOW(), 0)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@name", user.Name);
+                        cmd.Parameters.AddWithValue("@email", user.Email);
+
+                        cmd.ExecuteScalar();
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch { flag = false; }
+
+            return flag;
+        }
+
         public bool UpdateOtp(User user)
         {
             bool flag = true;

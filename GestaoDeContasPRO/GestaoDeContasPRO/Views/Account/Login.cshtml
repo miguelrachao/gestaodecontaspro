@@ -6,7 +6,7 @@
         <form class="minimal-form ms-4 me-4" id="LoginForm" name="LoginForm" autocomplete="off">
             <h2 class="form-title text-center pt-5 pb-4">Bem vindo de volta!</h2>
             <div class="mb-4">
-                <input type="text" class="form-control" placeholder="Email" id="Email" name="Email">
+                <input type="email" class="form-control" placeholder="Email" id="Email" name="Email">
             </div>
             <div class="mb-4">
                 <input type="number" class="form-control" placeholder="Código de autenticação" id="OtpCode" name="OtpCode" hidden>
@@ -14,6 +14,9 @@
             <div class="text-center mb-4 p-1 rounded" hidden id="LoginInfo"></div>
             <button type="submit" id="SubmitLogin" class="btn btn-primary mb-3 w-100 p-2 mb-5">Enviar código de autenticação</button>
         </form>
+        <div class="w-100 text-center">
+            <a href="~/Account/Register">Ainda não tem conta?</a>
+        </div>
     </div>
 </div>
 <script>
