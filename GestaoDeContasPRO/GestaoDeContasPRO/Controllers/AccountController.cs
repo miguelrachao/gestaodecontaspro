@@ -3,7 +3,9 @@ using GestaoDeContasPRO.Repositories;
 using GestaoDeContasPRO.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx.Crud;
 using System.Security.Claims;
 
 namespace GestaoDeContasPRO.Controllers
@@ -52,6 +54,7 @@ namespace GestaoDeContasPRO.Controllers
                             var claims = new List<Claim>
                             {
                                 new Claim(ClaimTypes.Name, user.Name),
+                                new Claim(ClaimTypes.Email, user.Email),
                                 new Claim("UserID", user.Id.ToString())
                             };
 
@@ -195,6 +198,74 @@ namespace GestaoDeContasPRO.Controllers
             {
                 return BadRequest();
             }           
+        }
+
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Details()
+        {
+            User user = new User();
+            user.Name = User.Identity?.Name ?? string.Empty;
+            user.Email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+
+            return View(user);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Details(User user)
+        {
+            user.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            if (_userRepo.UpdateUserName(user))
+            {
+                bool error = false;
+
+                if(_userRepo.GetById(ref user, ref error))
+                {
+                    try
+                    {
+                        // UPDATE CLAIMS ----------------------------
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, user.Name),
+                            new Claim(ClaimTypes.Email, user.Email),
+                            new Claim("UserID", user.Id.ToString())
+                        };
+
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var principal = new ClaimsPrincipal(claimsIdentity);
+
+
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(180)
+                        };
+
+                        await HttpContext.SignOutAsync();
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            principal,
+                            authProperties
+                        );
+                        // UPDATE CLAIMS----------------------------
+                    }
+                    catch { }
+
+                    return Ok();
+                }
+                else
+                {
+                    return StatusCode(500);
+                }                   
+            }
+            else
+            {
+                return StatusCode(500);
+            }    
         }
     }
 

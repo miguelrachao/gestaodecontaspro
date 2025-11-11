@@ -17,11 +17,12 @@
     @{
         if (User?.Identity?.IsAuthenticated == true)
         {
-            <ul class="nav align-items-end ms-auto">
+            <ul class="navbar-nav align-items-end ms-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" style="color: #fff;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">@User.Identity.Name</a>
-                    <ul class="dropdown-menu p-0">
-                        <li><a class="nav-link" style="color: #fff;" asp-controller="Account" asp-action="Logout">Sair</a></li>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin-right: 25px;">@User.Identity.Name</a>
+                    <ul class="dropdown-menu">
+                        <li class="ms-2"><a class="nav-link" asp-controller="Account" asp-action="Details">Conta</a></li>
+                        <li class="ms-2"><a class="nav-link" asp-controller="Account" asp-action="Logout">Sair</a></li>
                     </ul>
                 </li>
             </ul>

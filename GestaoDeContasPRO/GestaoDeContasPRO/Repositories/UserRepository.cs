@@ -14,6 +14,49 @@ namespace GestaoDeContasPRO.Repositories
             _connStr = config.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
 
+        public bool GetById(ref User user, ref bool error)
+        {
+            bool flag = false;
+            error = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = "SELECT * FROM users WHERE id = @id";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", user.Id);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                dr.Read();
+
+                                user.Id = (int)dr["id"];
+                                user.Name = dr["name"].ToString() ?? string.Empty;
+                                user.Email = dr["email"].ToString() ?? string.Empty;
+                                user.FavoriteProfileId = (int)dr["favorite_profile_id"];
+
+                                dr.Close();
+
+                                flag = true;
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch { error = true; }
+
+            return flag;
+        }
+
         public bool GetByEmail(ref User user, ref bool error)
         {
             bool flag = false;
@@ -72,6 +115,35 @@ namespace GestaoDeContasPRO.Repositories
                     {
                         cmd.Parameters.AddWithValue("@name", user.Name);
                         cmd.Parameters.AddWithValue("@email", user.Email);
+
+                        cmd.ExecuteScalar();
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch { flag = false; }
+
+            return flag;
+        }
+
+        public bool UpdateUserName(User user)
+        {
+            bool flag = true;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = "UPDATE users SET name = @name WHERE id = @id";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", user.Id);
+                        cmd.Parameters.AddWithValue("@name", user.Name);
+                        
 
                         cmd.ExecuteScalar();
                     }

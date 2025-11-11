@@ -1,36 +1,28 @@
 ﻿@{
-    ViewData["Title"] = "Criar conta";
+    ViewData["Title"] = "Conta";
 }
 <div class="d-flex justify-content-center">
     <div class="form-container" style="width:100%; max-width: 500px;">
-        <h2 class="form-title text-center pt-5 pb-4">Criar conta</h2>
-        <form class="minimal-form ms-4 me-4" id="RegisterForm" name="RegisterForm" autocomplete="off">
+        <h2 class="form-title text-center pt-5 pb-4">Detalhes da conta</h2>
+        <form class="minimal-form ms-4 me-4" id="DetailsForm" name="DetailsForm" autocomplete="off">
             <div class="mb-4">
-                <input type="text" class="form-control" placeholder="Nome" id="Name" name="Name">
+                <input type="text" class="form-control" placeholder="Nome" id="Name" name="Name" value="@Model.Name">
             </div>
             <div class="mb-4">
-                <input type="email" class="form-control" placeholder="Email" id="Email" name="Email">
+                <input type="email" class="form-control" placeholder="Email" id="Email" name="Email" disabled value="@Model.Email">
             </div>
-            <button type="submit" id="SubmitLogin" class="btn btn-primary mb-3 w-100 p-2 mb-5">Registar</button>
+            <button type="submit" id="SubmitLogin" class="btn btn-primary mb-3 w-100 p-2 mb-5">Alterar</button>
         </form>
-        <div class="w-100 text-center">
-            <a href="~/Account/Login">Voltar ao login</a>
-        </div>
     </div>
 </div>
 <script>
     jQuery(document).ready(function () {
-        jQuery('#RegisterForm').submit(function () {
+        jQuery('#DetailsForm').submit(function () {
             let name = document.getElementById("Name");
-            let email = document.getElementById("Email");
             if (name.value == "") {
-                RegisterForm.Name.focus();
+                DetailsForm.Name.focus();
                 warningAlert("Por favor, preencha o nome!");
-            }else if(email.value == "") {
-                RegisterForm.Email.focus();
-                warningAlert("Por favor, preencha o email!");
-            }
-            else {
+            }else {
                 swal.fire({
                     title: "Confirma os dados inseridos?",
                     icon: 'warning',
@@ -47,25 +39,21 @@
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $('#RegisterForm').addClass('form-blocked');
+                        $('#DetailsForm').addClass('form-blocked');
                         jQuery.ajax({
                             type: "POST",
-                            url: baseUrl + "Account/Register",
-                            data: new FormData(document.getElementById("RegisterForm")),
+                            url: baseUrl + "Account/Details",
+                            data: new FormData(document.getElementById("DetailsForm")),
                             mimeType: "multipart/form-data",
                             contentType: false,
                             processData: false,
                             success: function (data, textStatus, jqXHR) {
-                                $('#RegisterForm').addClass('form-blocked');
-                                successReloadToURL(baseUrl + "Account/Login");
+                                successAlert();
+                                $('#DetailsForm').removeClass('form-blocked');
                             },
                             error: function (jqXHR) {
-                                if(jqXHR.status == 409){
-                                    errorAlert("A conta já existe!");
-                                }else{
-                                    errorAlert("Ocorreu um erro!");
-                                }
-                                $('#RegisterForm').removeClass('form-blocked');
+                                errorAlert("Ocorreu um erro!");
+                                $('#DetailsForm').removeClass('form-blocked');
                             }
                         });
                     }
