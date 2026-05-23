@@ -15,8 +15,10 @@ namespace GestaoDeContasPRO.Services
             _smtpSettings = smtpSettings.Value;
         }
 
-        public void SendEmail(string To, string Subject, string Body)
+        public bool SendEmail(string To, string Subject, string Body)
         {
+            bool success = true;
+
             try
             {
                 MailMessage Mail = new MailMessage
@@ -41,7 +43,12 @@ namespace GestaoDeContasPRO.Services
 
                 Smtp.Send(Mail);
             }
-            catch { }
+            catch
+            {
+                success = false;
+            }
+
+            return success;
         }
 
         public void CreateLog()

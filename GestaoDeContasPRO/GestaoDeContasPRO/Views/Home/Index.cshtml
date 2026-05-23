@@ -1,7 +1,30 @@
 ﻿@{
     ViewData["Title"] = "Início";
-}
 
-<div class="text-center">
-    <h1 class="display-4">Bem vindo</h1>
-</div>
+    if (Model.error)
+    {
+        <p>Ocorreu um erro.</p>
+    }
+    else
+    {
+        if (Model.favoriteProfile.Id == 0)
+        {
+            if (Model.profiles.Count == 0)
+            {
+                <div class="text-center">
+                    <h3 class="mt-5">Bem vindo ao gestor de contas</h3>
+                    <h5 class="mt-5">Para começar, <a href="">crie um perfil</a></h5>
+                </div>
+            }
+            else
+            {
+                <p>Apresenta perfis para colocar como favorito.</p>
+            }
+        }
+        else
+        {
+            <p>Apresenta categorias do perfil @Model.favoriteProfile.Name</p>
+        }
+    }
+    
+}

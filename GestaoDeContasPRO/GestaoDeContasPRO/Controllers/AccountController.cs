@@ -112,16 +112,23 @@ namespace GestaoDeContasPRO.Controllers
                                     user.OtpCode = random.Next(100000, 1000000);
                                     user.OtpExpiration = DateTime.Now.AddMinutes(5);
 
-                                    if (_userRepo.UpdateOtp(user))
+                                    if(_helpers.SendEmail(user.Email, "Autenticação", "O seu código de autenticação: " + user.OtpCode))
                                     {
-                                        _helpers.SendEmail(user.Email, "Autenticação", "O seu código de autenticação: " + user.OtpCode);
-
-                                        return Ok();
+                                        if (_userRepo.UpdateOtp(user))
+                                        {
+                                            return Ok();
+                                        }
+                                        else
+                                        {
+                                            return StatusCode(500);
+                                        }
+                                            
                                     }
                                     else
                                     {
                                         return StatusCode(500);
-                                    }
+                                    }  
+                                    
                                 }
                             }     
                         }
