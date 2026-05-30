@@ -10,6 +10,7 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<ProfileRepository>();
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.Configure<Configurations>(builder.Configuration.GetSection("Configurations"));
 builder.Services.AddTransient<Helpers>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -1,4 +1,5 @@
 ﻿using GestaoDeContasPRO.Models;
+using GestaoDeContasPRO.Services;
 using MySql.Data.MySqlClient;
 
 namespace GestaoDeContasPRO.Repositories
@@ -6,10 +7,12 @@ namespace GestaoDeContasPRO.Repositories
     public class ProfileRepository
     {
         private readonly string _connStr;
+        private readonly Helpers _helpers;
 
-        public ProfileRepository(IConfiguration config)
+        public ProfileRepository(IConfiguration config, Helpers helpers)
         {
             _connStr = config.GetConnectionString("DefaultConnection") ?? string.Empty;
+            _helpers = helpers;
         }
 
         public bool GetUserFavoriteProfile(ref Profile profile, ref bool error)
@@ -51,7 +54,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetUserFavoriteProfile: " + ex.Message);
+            }
 
             return flag;
         }
@@ -103,7 +111,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetUserProfiles: " + ex.Message);
+            }
         }
 
         public void GetUserAllProfiles(ref List<Profile> profiles, int userId, ref bool error)
@@ -167,7 +180,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetUserAllProfiles: " + ex.Message);
+            }
         }
 
         public bool PostProfile(ref Profile profile)
@@ -195,7 +213,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { flag = false; }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - PostProfile: " + ex.Message);
+            }
 
             return flag;
         }
@@ -224,7 +247,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { flag = false; }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - UpdateProfile: " + ex.Message);
+            }
 
             return flag;
         }

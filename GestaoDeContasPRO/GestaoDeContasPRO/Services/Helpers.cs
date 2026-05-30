@@ -9,10 +9,24 @@ namespace GestaoDeContasPRO.Services
     public class Helpers
     {
         private readonly SmtpSettings _smtpSettings;
+        private readonly Configurations _configurations;
 
-        public Helpers(IOptions<SmtpSettings> smtpSettings)
+        public Helpers(IOptions<SmtpSettings> smtpSettings, IOptions<Configurations> configurations)
         {
             _smtpSettings = smtpSettings.Value;
+            _configurations = configurations.Value;
+        }
+
+        public void CreateLog(string error)
+        {
+            try
+            {
+                /* SAVE LOGS */
+                string logpath = _configurations.LogsPath;
+                string[] lines = new string[] { DateTime.Now.ToString() + " " + error + "\n\n" };
+                File.AppendAllLines(logpath, lines);
+            }
+            catch { /* cant perform create log action */ }
         }
 
         public bool SendEmail(string To, string Subject, string Body)
@@ -23,7 +37,7 @@ namespace GestaoDeContasPRO.Services
             {
                 MailMessage Mail = new MailMessage
                 {
-                    From = new MailAddress(_smtpSettings.User, "Gestão de contas"),
+                    From = new MailAddress(_smtpSettings.User, _smtpSettings.DisplayName),
                     Subject = Subject,
                     Body = Body,
                     IsBodyHtml = true
@@ -43,17 +57,14 @@ namespace GestaoDeContasPRO.Services
 
                 Smtp.Send(Mail);
             }
-            catch
+            catch(Exception ex)
             {
                 success = false;
+
+                CreateLog("Helpers.cs - SendEmail: " + ex.Message);
             }
 
             return success;
-        }
-
-        public void CreateLog()
-        {
-
         }
     }
 }

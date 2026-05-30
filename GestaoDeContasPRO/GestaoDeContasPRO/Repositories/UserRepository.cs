@@ -1,4 +1,5 @@
 ﻿using GestaoDeContasPRO.Models;
+using GestaoDeContasPRO.Services;
 using Microsoft.Data.SqlClient;
 using MySql.Data.MySqlClient;
 using System.Data;
@@ -8,10 +9,12 @@ namespace GestaoDeContasPRO.Repositories
     public class UserRepository
     {
         private readonly string _connStr;
+        private readonly Helpers _helpers;
 
-        public UserRepository(IConfiguration config)
+        public UserRepository(IConfiguration config, Helpers helpers)
         {
             _connStr = config.GetConnectionString("DefaultConnection") ?? string.Empty;
+            _helpers = helpers;
         }
 
         public bool GetById(ref User user, ref bool error)
@@ -52,7 +55,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            { 
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetById: " + ex.Message);
+            }
 
             return flag;
         }
@@ -94,7 +102,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetByEmail: " + ex.Message);
+            }
 
             return flag;
         }
@@ -122,7 +135,13 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { flag = false; }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - PostUser: " + ex.Message);
+            }
+
 
             return flag;
         }
@@ -151,7 +170,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { flag = false; }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - UpdateUserName: " + ex.Message);
+            }
 
             return flag;
         }
@@ -180,9 +204,11 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 flag = false;
+
+                _helpers.CreateLog("UserRepository - UpdateOtp: " + ex.Message);
             }
 
             return flag;
@@ -226,7 +252,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - ValidateOtp: " + ex.Message);
+            }
 
             return flag;
         }
@@ -260,7 +291,12 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Close();
                 }
             }
-            catch { error = true; }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - HasAlreadyOtp: " + ex.Message);
+            }
 
             return flag;
         }
