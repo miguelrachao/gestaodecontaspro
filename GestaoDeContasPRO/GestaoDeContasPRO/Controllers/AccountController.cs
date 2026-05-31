@@ -220,7 +220,7 @@ namespace GestaoDeContasPRO.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> Details(User user)
         {
             user.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");

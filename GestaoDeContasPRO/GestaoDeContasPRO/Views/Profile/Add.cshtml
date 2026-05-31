@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Criar perfil";
+}
+<div class="d-flex justify-content-center">
+    <div class="form-container" style="width:100%; max-width: 500px;">
+        <h2 class="form-title text-center pt-5 pb-4">Adicionar perfil</h2>
+        <form class="minimal-form ms-4 me-4" id="AddProfileForm" name="AddProfileForm" autocomplete="off">
+            <div class="mb-4">
+                <input type="text" class="form-control" placeholder="Nome" id="Name" name="Name">
+            </div>
+            <button type="submit" id="SubmitAddProfile" class="btn btn-primary mb-3 w-100 p-2 mb-5">Adicionar</button>
+        </form>
+    </div>
+</div>
+<script>
+    jQuery(document).ready(function () {
+        jQuery('#AddProfileForm').submit(function () {
+            let name = document.getElementById("Name");
+            if (name.value == "") {
+                AddProfileForm.Name.focus();
+                warningAlert("Por favor, preencha o nome!");
+            }else {
+                swal.fire({
+                    title: "Confirma os dados inseridos?",
+                    icon: 'warning',
+                    background: '#212529',
+                    color: '#fff',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0D6EFD',
+                    confirmButtonText: 'Sim!',
+                    cancelButtonColor: '#6D757D',
+                    cancelButtonText: "Cancelar!",
+                    customClass: {
+                        confirmButton: 'btn-size',
+                        cancelButton: 'btn-size'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#AddProfileForm').addClass('form-blocked');
+                        jQuery.ajax({
+                            type: "POST",
+                            url: baseUrl + "Profile/Add",
+                            data: new FormData(document.getElementById("AddProfileForm")),
+                            contentType: false,
+                            processData: false,
+                            success: function (data, textStatus, jqXHR) {
+                                 successReloadToURL(baseUrl + "Profile/Details/" + data.id);
+                            },
+                            error: function (jqXHR) {
+                                errorAlert("Ocorreu um erro!");
+                                $('#AddProfileForm').removeClass('form-blocked');
+                            }
+                        });
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>

@@ -1,30 +1,50 @@
 ﻿@{
-    ViewData["Title"] = "Conta";
+    ViewData["Title"] = "Detalhes perfil";
 }
-<div class="card">
+<div class="card mb-4">
     <div class="card-header">
-        <h5>Detalhes da conta</h5>
+        <h5>Detalhes do perfil</h5>
     </div>
     <div class="card-body">
-         <form class="minimal-form ms-4 me-4" id="DetailsForm" name="DetailsForm" autocomplete="off">
+        <form class="minimal-form ms-4 me-4" id="DetailsForm" name="DetailsForm" autocomplete="off">
+            <input type="hidden" name="id" value="@Model.profile.Id">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col">
                     <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
-                    <input type="text" class="form-control" name="Name" id="Name" autocomplete="off" value="@Model.Name" style="margin-bottom:10px;">
+                    <input type="text" class="form-control" name="Name" id="Name" autocomplete="off" value="@Model.profile.Name" style="margin-bottom:10px;">
                 </div>
-                <div class="col-sm-4">
-                    <label for="Active" class="fw-bold" style="margin-bottom:-10px;">Email</label>
-                    <input type="email" class="form-control" placeholder="Email" id="Email" name="Email" disabled value="@Model.Email">
+                <div class="col-sm-2">
+                    <label for="Active" class="fw-bold" style="margin-bottom:-10px;">Ativo</label>
+                    <select name="Active" id="Active" class="form-select form-control">
+                        <option value="true" selected="@(Model.profile.Active ? "selected" : null)">Sim</option>
+                        <option value="false" selected="@(Model.profile.Active ? null : "selected")">Não</option>
+                    </select>
                 </div>
                 <div class="col-sm-2">
                     <input type="submit" value="Guardar" id="SubmitButton" class="btn btn-primary mt-4" />
                 </div>
             </div>
         </form>
-
     </div>
 </div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="d-inline">Categorias</h5>
+        <button class="btn btn-primary ms-2">Adicionar</button>
+    </div>
+    <div class="card-body">
+        @{
+            if (Model.categories.Count > 0)
+            {
 
+            }
+            else
+            {
+                <p>Este perfil ainda não tem categorias associadas!</p>
+            }
+        }
+    </div>
+</div>
 <script>
     jQuery(document).ready(function () {
         jQuery('#DetailsForm').submit(function () {
@@ -52,7 +72,7 @@
                         $('#DetailsForm').addClass('form-blocked');
                         jQuery.ajax({
                             type: "PUT",
-                            url: baseUrl + "Account/Details",
+                            url: baseUrl + "Profile/Details",
                             data: new FormData(document.getElementById("DetailsForm")),
                             mimeType: "multipart/form-data",
                             contentType: false,

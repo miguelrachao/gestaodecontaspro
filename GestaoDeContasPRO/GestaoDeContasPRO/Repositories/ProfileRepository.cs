@@ -64,6 +64,55 @@ namespace GestaoDeContasPRO.Repositories
             return flag;
         }
 
+        public void GetProfile(ref Profile profile, ref bool error)
+        {
+            error = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = @"SELECT * FROM profiles p
+                                    LEFT JOIN profile_shares ps on ps.profile_id = @id AND ps.user_id = @userId
+                                    WHERE p.id = @id AND (p.user_id = @userId OR ps.user_id = @userId)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", profile.Id);
+                        cmd.Parameters.AddWithValue("@userId", profile.UserId);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                dr.Read();
+
+                                profile.Name = dr["name"].ToString() ?? string.Empty;
+                                profile.Active = Convert.ToBoolean(dr["Active"]);
+                                   
+                                dr.Close();
+
+                            }
+                            else
+                            {
+                                profile.Id = 0;
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetProfile: " + ex.Message);
+            }
+        }
+
         public void GetUserProfiles(ref List<Profile> profiles, int userId, ref bool error)
         {
             error = false;
@@ -233,12 +282,25 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = "UPDATE profiles SET name=@name, active=@active WHERE id=@id";
+                    const string query = @"UPDATE profiles p
+                                            LEFT JOIN profile_shares ps
+                                                ON ps.profile_id = p.id
+                                                AND ps.user_id = @userId
+                                            SET
+                                                p.name = @name,
+                                                p.active = @active
+                                            WHERE
+                                                p.id = @id
+                                                AND (
+                                                    p.user_id = @userId
+                                                    OR ps.user_id = @userId
+                                                )";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
                         cmd.Parameters.AddWithValue("@name", profile.Name);
                         cmd.Parameters.AddWithValue("@active", profile.Active);
+                        cmd.Parameters.AddWithValue("@userId", profile.UserId);
                         cmd.Parameters.AddWithValue("@id", profile.Id);
 
                         cmd.ExecuteNonQuery();
