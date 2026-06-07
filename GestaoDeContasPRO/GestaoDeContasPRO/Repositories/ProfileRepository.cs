@@ -1,6 +1,7 @@
 ﻿using GestaoDeContasPRO.Models;
 using GestaoDeContasPRO.Services;
 using MySql.Data.MySqlClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GestaoDeContasPRO.Repositories
 {
@@ -237,6 +238,55 @@ namespace GestaoDeContasPRO.Repositories
             }
         }
 
+        public void GetProfileShares(ref List<ProfileShare> profileShares, int profileId, ref bool error)
+        {
+            error = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = @"SELECT ps.id, u.name, ps.date_log FROM profile_shares ps
+                                           INNER JOIN users u ON u.id = ps.user_id
+                                           WHERE ps.profile_id = @profileId";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@profileId", profileId);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                while (dr.Read())
+                                {
+                                    profileShares.Add(new ProfileShare()
+                                    {
+                                        Id = (int)dr["id"],
+                                        UserName = (string)dr["name"],
+                                        DateLog = dr["date_log"] == DBNull.Value ? null: (DateTime)dr["date_log"]
+                                    });
+                                }
+
+                                dr.Close();
+
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("UserRepository - GetProfileShares: " + ex.Message);
+            }
+        }
+
         public bool PostProfile(ref Profile profile)
         {
             bool flag = true;
@@ -318,5 +368,95 @@ namespace GestaoDeContasPRO.Repositories
 
             return flag;
         }
+
+        public bool PostProfileShare(ProfileShare profileShare)
+        {
+            bool flag = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = @"INSERT INTO profile_shares (profile_id, user_id, date_log)
+                                           SELECT p.id, u.id, NOW()
+                                           FROM profiles p
+                                           JOIN users u ON u.email = @userEmail
+                                           WHERE p.id = @profileId
+                                               AND p.user_id = @userId
+                                               AND NOT EXISTS (
+                                                   SELECT 1
+                                                   FROM profile_shares ps
+                                                   WHERE ps.profile_id = p.id
+                                                   AND ps.user_id = u.id
+                                            )";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@userEmail", profileShare.UserEmail);
+                        cmd.Parameters.AddWithValue("@profileId", profileShare.ProfileId);
+                        cmd.Parameters.AddWithValue("@userId", profileShare.UserId);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                            flag = true;
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - PostProfileShare: " + ex.Message);
+            }
+
+            return flag;
+        }
+
+        public bool DeleteProfileShare(ProfileShare profileShare)
+        {
+            bool flag = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = @"DELETE ps
+                                           FROM profile_shares ps
+                                           INNER JOIN profiles p
+                                           ON p.id = ps.profile_id
+                                           WHERE ps.id = @id
+                                           AND p.user_id = @userId;";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", profileShare.Id);
+                        cmd.Parameters.AddWithValue("@userId", profileShare.UserId);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                            flag = true;
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - DeleteProfileShare: " + ex.Message);
+            }
+
+            return flag;
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using GestaoDeContasPRO.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Dynamic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GestaoDeContasPRO.Controllers
 {
@@ -66,21 +67,23 @@ namespace GestaoDeContasPRO.Controllers
 
                 if (!error)
                 {
-                    dynamic model = new ExpandoObject();
-                    model.profile = profile;
-                    model.categories = categories;
+                    List<ProfileShare> profileShares = new List<ProfileShare>();
+                    _profileRepo.GetProfileShares(ref profileShares, profile.Id, ref error);
 
-                    return View(model);
-                }
-                else
-                {
-                    return RedirectToAction("Error", "Home");
-                }      
+                    if (!error)
+                    {
+                        dynamic model = new ExpandoObject();
+                        model.profile = profile;
+                        model.categories = categories;
+                        model.profileShares = profileShares;
+
+                        return View(model);
+                    }
+                }   
             }
-            else
-            {
-                return RedirectToAction("Error", "Home");
-            } 
+
+            return RedirectToAction("Error", "Home");
+
         }
 
         [HttpPut]
@@ -89,6 +92,38 @@ namespace GestaoDeContasPRO.Controllers
             profile.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
 
             if (_profileRepo.UpdateProfile(profile))
+            {
+                return Ok();
+            }
+            else
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Share(ProfileShare profileShare)
+        {
+            profileShare.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            if (_profileRepo.PostProfileShare(profileShare))
+            {
+                return Ok();
+            }
+            else
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpDelete]
+        public IActionResult RemoveShare(int id)
+        {
+            ProfileShare profileShare = new ProfileShare();
+            profileShare.Id = id;
+            profileShare.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            if (_profileRepo.DeleteProfileShare(profileShare))
             {
                 return Ok();
             }

@@ -27,16 +27,96 @@
         </form>
     </div>
 </div>
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="d-inline">Partilhar perfil</h5>
+        <img src="~/img/add.png" data-bs-toggle="modal" data-bs-target="#AddProfileShareModal" style="width:28px; cursor:pointer;" class="ms-1" />
+    </div>
+    <div class="card-body">
+        @{
+            if (Model.profileShares.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Utilizador</th>
+                                <th>Data partilha</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (ProfileShare profileShare in Model.profileShares)
+                            {
+                                <tr>
+                                    <td>@profileShare.UserName</td>
+                                    <td>@profileShare.DateLog</td>
+                                    <td><a href="" onclick="return removeProfileShare(@profileShare.Id)"><img src="~/img/user-remove.png" style="width:32px;" title="Remover partilha"/></a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>Este perfil ainda não está partilhado.</p>
+            }
+
+        }
+    </div>
+</div>
 <div class="card">
     <div class="card-header">
         <h5 class="d-inline">Categorias</h5>
-        <button class="btn btn-primary ms-2">Adicionar</button>
+        <img src="~/img/add.png" data-bs-toggle="modal" data-bs-target="#AddCategoryModal" style="width:28px; cursor:pointer;" class="ms-1"/>
     </div>
     <div class="card-body">
         @{
             if (Model.categories.Count > 0)
             {
-
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Ativo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model.categories)
+                            {
+                                <form>
+                                <tr>
+                                    <input type="hidden" name="Id" value="@category.Id" />
+                                    <td>
+                                        <input type="text" name="Name" value="@category.Name" class="form-control" style="min-width: 100px;" />
+                                    </td>
+                                    <td>
+                                        <select name="Type" class="form-select form-control" style="min-width: 100px;">
+                                            @foreach (var type in Enum.GetValues<ActionType>())
+                                            {
+                                                <option value="@type" selected="@(type == category.Type)">@type.GetDisplayName()</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="Active" id="Active" class="form-select form-control" style="min-width: 100px;">
+                                            <option value="true" selected="@(category.Active ? "selected" : null)">Sim</option>
+                                            <option value="false" selected="@(category.Active ? null : "selected")">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary btn-sm" onclick="return submitEditCategory(this.form)">Guardar</button>
+                                    </td>
+                                </tr>
+                                </form>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
             else
             {
@@ -45,11 +125,77 @@
         }
     </div>
 </div>
+<div class="modal fade" id="AddCategoryModal" tabindex="-1" aria-labelledby="AddCategoryModal" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar categoria ao perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="minimal-form ms-4 me-4" id="AddCategoryForm" name="AddCategoryForm" autocomplete="off">
+                    <input type="hidden" name="ProfileId" value="@Model.profile.Id">
+                    <div class="row">
+                        <div class="col">
+                            <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
+                            <input type="text" class="form-control" name="Name" id="Name" autocomplete="off" style="margin-bottom:10px;">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="ActionType" class="fw-bold" style="margin-bottom:-10px;">Tipo</label>
+                            <select class="form-select form-control" name="Type">
+                                <option value="">Selecionar</option>
+                                @foreach (ActionType actionType in Enum.GetValues<ActionType>())
+                                {
+                                    <option value="@actionType">
+                                        @actionType.GetDisplayName()
+                                    </option>
+                                } 
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="submit" value="Guardar" id="SubmitButton" class="btn btn-primary mt-4" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AddProfileShareModal" tabindex="-1" aria-labelledby="AddProfileShareModal" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Partilhar perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="minimal-form ms-4 me-4" id="ShareProfileForm" name="ShareProfileForm" autocomplete="off">
+                    <input type="hidden" name="ProfileId" value="@Model.profile.Id">
+                    <div class="row">
+                        <div class="col">
+                            <label for="Email" class="fw-bold" style="margin-bottom:-10px;">Email</label>
+                            <input type="Email" class="form-control" name="UserEmail" id="UserEmail" autocomplete="off" style="margin-bottom:10px;">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="submit" value="Partilhar" id="SubmitButton" class="btn btn-primary mt-4" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     jQuery(document).ready(function () {
         jQuery('#DetailsForm').submit(function () {
-            let name = document.getElementById("Name");
-            if (name.value == "") {
+            let name = DetailsForm.Name.value;
+            if (name == "") {
                 DetailsForm.Name.focus();
                 warningAlert("Por favor, preencha o nome!");
             }else {
@@ -92,4 +238,189 @@
             return false;
         });
     });
+
+    jQuery(document).ready(function () {
+        jQuery('#AddCategoryForm').submit(function () {
+            let name = AddCategoryForm.Name;
+            let type = AddCategoryForm.Type;
+            if (name.value == "") {
+                name.focus();
+                warningAlert("Por favor, preencha o nome!");
+            }else if (type.value == "") {
+                type.focus();
+                warningAlert("Por favor, selecione o tipo!");
+            }else {
+                swal.fire({
+                    title: "Confirma os dados inseridos?",
+                    icon: 'warning',
+                    background: '#212529',
+                    color: '#fff',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0D6EFD',
+                    confirmButtonText: 'Sim!',
+                    cancelButtonColor: '#6D757D',
+                    cancelButtonText: "Cancelar!",
+                    customClass: {
+                        confirmButton: 'btn-size',
+                        cancelButton: 'btn-size'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#AddCategoryForm').addClass('form-blocked');
+                        jQuery.ajax({
+                            type: "POST",
+                            url: baseUrl + "Category/Add",
+                            data: new FormData(document.getElementById("AddCategoryForm")),
+                            mimeType: "multipart/form-data",
+                            contentType: false,
+                            processData: false,
+                            success: function (data, textStatus, jqXHR) {
+                                successReload();
+                            },
+                            error: function (jqXHR) {
+                                errorAlert("Ocorreu um erro!");
+                                $('#AddCategoryForm').removeClass('form-blocked');
+                            }
+                        });
+                    }
+                });
+            }
+            return false;
+        });
+    });
+
+    jQuery(document).ready(function () {
+        jQuery('#ShareProfileForm').submit(function () {
+            let userEmail = ShareProfileForm.UserEmail;
+            if (userEmail.value == "") {
+                userEmail.focus();
+                warningAlert("Por favor, preencha o email!");
+            }else {
+                swal.fire({
+                    title: "Confirma os dados inseridos?",
+                    icon: 'warning',
+                    background: '#212529',
+                    color: '#fff',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0D6EFD',
+                    confirmButtonText: 'Sim!',
+                    cancelButtonColor: '#6D757D',
+                    cancelButtonText: "Cancelar!",
+                    customClass: {
+                        confirmButton: 'btn-size',
+                        cancelButton: 'btn-size'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#ShareProfileForm').addClass('form-blocked');
+                        jQuery.ajax({
+                            type: "POST",
+                            url: baseUrl + "Profile/Share",
+                            data: new FormData(document.getElementById("ShareProfileForm")),
+                            mimeType: "multipart/form-data",
+                            contentType: false,
+                            processData: false,
+                            success: function (data, textStatus, jqXHR) {
+                                successReload();
+                            },
+                            error: function (jqXHR) {
+                                errorAlert("Não foi possivel partilhar o perfil!");
+                                $('#ShareProfileForm').removeClass('form-blocked');
+                            }
+                        });
+                    }
+                });
+            }
+            return false;
+        });
+    });
+
+    function submitEditCategory(form){
+
+        let name = form.Name;
+        let type = form.Type;
+
+        if (name.value == "") {
+            name.focus();
+            warningAlert("Por favor, preencha o nome!");
+        }else if (type.value == "") {
+            type.focus();
+            warningAlert("Por favor, selecione o tipo!");
+        }else {
+            swal.fire({
+                title: "Confirma os dados inseridos?",
+                icon: 'warning',
+                background: '#212529',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonColor: '#0D6EFD',
+                confirmButtonText: 'Sim!',
+                cancelButtonColor: '#6D757D',
+                cancelButtonText: "Cancelar!",
+                customClass: {
+                    confirmButton: 'btn-size',
+                    cancelButton: 'btn-size'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $(form).addClass('form-blocked');
+                    jQuery.ajax({
+                        type: "PUT",
+                        url: baseUrl + "Category/Edit",
+                        data: new FormData(form),
+                        mimeType: "multipart/form-data",
+                        contentType: false,
+                        processData: false,
+                        success: function (data, textStatus, jqXHR) {
+                            successAlert();
+                            $(form).removeClass('form-blocked');
+                        },
+                        error: function (jqXHR) {
+                            errorAlert("Ocorreu um erro!");
+                            $(form).removeClass('form-blocked');
+                        }
+                    });
+                }
+            });
+        }
+
+        return false;
+    }
+
+    function removeProfileShare(id){
+
+        swal.fire({
+            title: "Deseja mesmo remover a partilha?",
+            icon: 'warning',
+            background: '#212529',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonColor: '#0D6EFD',
+            confirmButtonText: 'Sim!',
+            cancelButtonColor: '#6D757D',
+            cancelButtonText: "Cancelar!",
+            customClass: {
+                confirmButton: 'btn-size',
+                cancelButton: 'btn-size'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                jQuery.ajax({
+                    type: "DELETE",
+                    url: baseUrl + "Profile/RemoveShare",
+                    data: {id : id},
+                    success: function (data, textStatus, jqXHR) {
+                        successReload();
+                    },
+                    error: function (jqXHR) {
+                        errorAlert("Ocorreu um erro!");
+                    }
+                });
+            }
+        });
+        
+
+        return false;
+    }
+
 </script>
