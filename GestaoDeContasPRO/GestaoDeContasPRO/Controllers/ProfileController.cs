@@ -18,6 +18,29 @@ namespace GestaoDeContasPRO.Controllers
             _categoryRepo = categoryRepo;
         }
 
+        [HttpGet]
+        public IActionResult Index()
+        {
+            bool error = false;
+            List<Profile> profiles = new List<Profile>();
+            int userId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            _profileRepo.GetUserAllProfiles(ref profiles, userId, ref error);
+
+            dynamic model = new ExpandoObject();
+            model.profiles = profiles;
+
+            if (error)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+            else
+            {
+                return View(model);
+            } 
+        }
+
+        [HttpGet]
         public IActionResult Add()
         {
             return View();
@@ -51,6 +74,7 @@ namespace GestaoDeContasPRO.Controllers
             
         }
 
+        [HttpGet]
         public IActionResult Details(int id)
         {
             Profile profile = new Profile();
@@ -76,6 +100,7 @@ namespace GestaoDeContasPRO.Controllers
                         model.profile = profile;
                         model.categories = categories;
                         model.profileShares = profileShares;
+                        model.ownProfile = profile.UserId == int.Parse(User.FindFirst("UserID")?.Value ?? "0");
 
                         return View(model);
                     }

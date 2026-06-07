@@ -6,66 +6,91 @@
         <h5>Detalhes do perfil</h5>
     </div>
     <div class="card-body">
-        <form class="minimal-form ms-4 me-4" id="DetailsForm" name="DetailsForm" autocomplete="off">
-            <input type="hidden" name="id" value="@Model.profile.Id">
-            <div class="row">
-                <div class="col">
-                    <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
-                    <input type="text" class="form-control" name="Name" id="Name" autocomplete="off" value="@Model.profile.Name" style="margin-bottom:10px;">
-                </div>
-                <div class="col-sm-2">
-                    <label for="Active" class="fw-bold" style="margin-bottom:-10px;">Ativo</label>
-                    <select name="Active" id="Active" class="form-select form-control">
-                        <option value="true" selected="@(Model.profile.Active ? "selected" : null)">Sim</option>
-                        <option value="false" selected="@(Model.profile.Active ? null : "selected")">Não</option>
-                    </select>
-                </div>
-                <div class="col-sm-2">
-                    <input type="submit" value="Guardar" id="SubmitButton" class="btn btn-primary mt-4" />
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="d-inline">Partilhar perfil</h5>
-        <img src="~/img/add.png" data-bs-toggle="modal" data-bs-target="#AddProfileShareModal" style="width:28px; cursor:pointer;" class="ms-1" />
-    </div>
-    <div class="card-body">
         @{
-            if (Model.profileShares.Count > 0)
+            if (Model.ownProfile)
             {
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Utilizador</th>
-                                <th>Data partilha</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (ProfileShare profileShare in Model.profileShares)
-                            {
-                                <tr>
-                                    <td>@profileShare.UserName</td>
-                                    <td>@profileShare.DateLog</td>
-                                    <td><a href="" onclick="return removeProfileShare(@profileShare.Id)"><img src="~/img/user-remove.png" style="width:32px;" title="Remover partilha"/></a></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <form class="minimal-form ms-4 me-4" id="DetailsForm" name="DetailsForm" autocomplete="off">
+                    <input type="hidden" name="id" value="@Model.profile.Id">
+                    <div class="row">
+                        <div class="col">
+                            <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
+                            <input type="text" class="form-control" name="Name" id="Name" autocomplete="off" value="@Model.profile.Name" style="margin-bottom:10px;">
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="Active" class="fw-bold" style="margin-bottom:-10px;">Ativo</label>
+                            <select name="Active" id="Active" class="form-select form-control">
+                                <option value="true" selected="@(Model.profile.Active ? "selected" : null)">Sim</option>
+                                <option value="false" selected="@(Model.profile.Active ? null : "selected")">Não</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="submit" value="Guardar" id="SubmitButton" class="btn btn-primary mt-4" />
+                        </div>
+                    </div>
+                </form>
             }
             else
             {
-                <p>Este perfil ainda não está partilhado.</p>
+                <div class="row">
+                    <div class="col">
+                        <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
+                        <input type="text" class="form-control" name="Name" id="Name" disabled value="@Model.profile.Name" style="margin-bottom:10px;">
+                    </div>
+                    <div class="col">
+                        <label for="Proprietário" class="fw-bold" style="margin-bottom:-10px;">Proprietário</label>
+                        <input type="text" class="form-control" name="Proprietário" id="Proprietário" disabled value="@Model.profile.UserName" style="margin-bottom:10px;">
+                    </div>
+                </div>
             }
-
         }
     </div>
 </div>
+@{
+    if (Model.ownProfile)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="d-inline">Partilhar perfil</h5>
+                <img src="~/img/add.png" data-bs-toggle="modal" data-bs-target="#AddProfileShareModal" style="width:28px; cursor:pointer;" class="ms-1" />
+            </div>
+            <div class="card-body">
+                @{
+                    if (Model.profileShares.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Utilizador</th>
+                                        <th>Data partilha</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (ProfileShare profileShare in Model.profileShares)
+                                    {
+                                        <tr>
+                                            <td>@profileShare.UserName</td>
+                                            <td>@profileShare.DateLog</td>
+                                            <td><a href="" onclick="return removeProfileShare(@profileShare.Id)"><img src="~/img/user-remove.png" style="width:32px;" title="Remover partilha" /></a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Este perfil ainda não está partilhado.</p>
+                    }
+
+                }
+            </div>
+        </div>
+
+    }
+}
+
 <div class="card">
     <div class="card-header">
         <h5 class="d-inline">Categorias</h5>

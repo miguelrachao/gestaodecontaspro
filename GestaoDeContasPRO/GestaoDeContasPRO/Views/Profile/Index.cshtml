@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Perfis";
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="d-inline">Perfis</h5>
+        <a href="~/Profile/Add"><img src="~/img/add.png" style="width:28px;" class="ms-1" /></a>
+    </div>
+    <div class="card-body">
+
+        @{
+            if(Model.profiles.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Perfil</th>
+                                <th>Proprietário</th>
+                                <th style="text-align:center;">Favorito</th>
+                                <th style="text-align:center;">Ativo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Profile profile in Model.profiles)
+                            {
+                                <tr>
+                                    <td style="width:50px;"><a href="~/Profile/Details/@profile.Id"><img src="~/img/settings.png" style="width:28px;"/></a></td>
+                                    <td style="vertical-align: middle;">@profile.Name</td>
+                                    <td style="vertical-align: middle;">@profile.UserName</td>
+                                    <td style="text-align:center;"><img src="~/img/@(profile.Favorite ? "on.png" : "off.png")" style="width:15px;" /></td>
+                                    <td style="text-align:center;"><img src="~/img/@(profile.Active ? "on.png" : "off.png")" style="width:15px;" /></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>Nenhum perfil encontrado.</p>
+            }
+        }
+
+    </div>
+</div>

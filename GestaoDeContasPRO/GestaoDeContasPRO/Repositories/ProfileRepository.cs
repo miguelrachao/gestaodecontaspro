@@ -75,8 +75,9 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = @"SELECT * FROM profiles p
+                    const string query = @"SELECT p.id, p.name, u.name user_name, p.active FROM profiles p
                                     LEFT JOIN profile_shares ps on ps.profile_id = @id AND ps.user_id = @userId
+                                    INNER JOIN users u ON u.id = p.user_id
                                     WHERE p.id = @id AND (p.user_id = @userId OR ps.user_id = @userId)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
@@ -91,7 +92,8 @@ namespace GestaoDeContasPRO.Repositories
                                 dr.Read();
 
                                 profile.Name = dr["name"].ToString() ?? string.Empty;
-                                profile.Active = Convert.ToBoolean(dr["Active"]);
+                                profile.UserName = dr["user_name"].ToString() ?? string.Empty;
+                                profile.Active = Convert.ToBoolean(dr["active"]);
                                    
                                 dr.Close();
 
@@ -179,29 +181,40 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = @"(SELECT 
-                                    p.id, 
-                                    p.name, 
-                                    p.active, 
-                                    0 shared,
-                                    'own' owner_user_name
-                                    FROM profiles p 
-                                    WHERE p.user_id = @userId
-                                    ORDER BY p.name ASC)
+                    const string query = @"SELECT 
+                                            p.id, 
+                                            p.name, 
+                                            p.active,
+                                            0 AS shared,
+                                            u.name AS user_name,
+                                            CASE
+                                                WHEN owner.favorite_profile_id = p.id THEN 1
+                                                ELSE 0
+                                            END AS favorite
+                                        FROM profiles p
+                                        INNER JOIN users u ON u.id = p.user_id
+                                        INNER JOIN users owner ON owner.id = @userId
+                                        WHERE p.user_id = @userId
 
-                                    UNION ALL
+                                        UNION ALL
 
-                                    (SELECT 
-                                    DISTINCT(p.id), 
-                                    p.name, 
-                                    p.active,
-                                    1 shared,
-                                    u.name owner_user_name
-                                    FROM profile_shares pf
-                                    INNER JOIN profiles p on p.id = pf.profile_id
-                                    INNER JOIN users u on u.id = p.user_id
-                                    WHERE pf.user_id = @userId
-                                    ORDER BY p.name ASC)";
+                                        SELECT 
+                                            p.id, 
+                                            p.name, 
+                                            p.active,
+                                            1 AS shared,
+                                            u.name AS user_name,
+                                            CASE
+                                                WHEN owner.favorite_profile_id = p.id THEN 1
+                                                ELSE 0
+                                            END AS favorite
+                                        FROM profile_shares pf
+                                        INNER JOIN profiles p ON p.id = pf.profile_id
+                                        INNER JOIN users u ON u.id = p.user_id
+                                        INNER JOIN users owner ON owner.id = @userId
+                                        WHERE pf.user_id = @userId
+
+                                        ORDER BY active DESC, favorite DESC, name ASC";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
@@ -216,8 +229,10 @@ namespace GestaoDeContasPRO.Repositories
                                     profiles.Add(new Profile()
                                     {
                                         Id = (int)dr["id"],
-                                        Name = dr["name"].ToString() ?? string.Empty,
-                                        Active = Convert.ToBoolean(dr["Active"])
+                                        Name = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"],
+                                        UserName = dr["user_name"] == DBNull.Value ? string.Empty : (string)dr["user_name"],
+                                        Favorite = Convert.ToBoolean(dr["favorite"]),
+                                        Active = Convert.ToBoolean(dr["active"])
                                     });
                                 }
 

@@ -1,17 +1,28 @@
 ﻿@{
     ViewData["Title"] = "Criar perfil";
 }
-<div class="d-flex justify-content-center">
-    <div class="form-container" style="width:100%; max-width: 500px;">
-        <h2 class="form-title text-center pt-5 pb-4">Adicionar perfil</h2>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Adicionar perfill</h5>
+    </div>
+    <div class="card-body">
         <form class="minimal-form ms-4 me-4" id="AddProfileForm" name="AddProfileForm" autocomplete="off">
-            <div class="mb-4">
-                <input type="text" class="form-control" placeholder="Nome" id="Name" name="Name">
+            <div class="row">
+                <div class="col">
+                    <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
+                    <input type="text" class="form-control" name="Name" id="Name" autocomplete="off" style="margin-bottom:10px;">
+                </div>
             </div>
-            <button type="submit" id="SubmitAddProfile" class="btn btn-primary mb-3 w-100 p-2 mb-5">Adicionar</button>
+            <div class="row">
+                <div class="col">
+                    <button type="submit" id="SubmitAddProfile" class="btn btn-primary w-100 p-2 mt-3 mb-4">Adicionar</button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
+
 <script>
     jQuery(document).ready(function () {
         jQuery('#AddProfileForm').submit(function () {
