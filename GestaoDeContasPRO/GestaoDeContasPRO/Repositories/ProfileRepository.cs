@@ -75,10 +75,16 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = @"SELECT p.id, p.name, u.name user_name, p.active FROM profiles p
-                                    LEFT JOIN profile_shares ps on ps.profile_id = @id AND ps.user_id = @userId
-                                    INNER JOIN users u ON u.id = p.user_id
-                                    WHERE p.id = @id AND (p.user_id = @userId OR ps.user_id = @userId)";
+                    const string query = @"SELECT p.id, p.name, u.name user_name, p.active,
+                                            CASE
+                                                WHEN owner.favorite_profile_id = p.id THEN 1
+                                                ELSE 0
+                                            END AS favorite
+                                            FROM profiles p
+                                            LEFT JOIN profile_shares ps on ps.profile_id = @id AND ps.user_id = @userId
+                                            INNER JOIN users u ON u.id = p.user_id
+                                            INNER JOIN users owner ON owner.id = @userId
+                                            WHERE p.id = @id AND (p.user_id = @userId OR ps.user_id = @userId)";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
@@ -94,7 +100,8 @@ namespace GestaoDeContasPRO.Repositories
                                 profile.Name = dr["name"].ToString() ?? string.Empty;
                                 profile.UserName = dr["user_name"].ToString() ?? string.Empty;
                                 profile.Active = Convert.ToBoolean(dr["active"]);
-                                   
+                                profile.Favorite = Convert.ToBoolean(dr["Favorite"]);
+
                                 dr.Close();
 
                             }

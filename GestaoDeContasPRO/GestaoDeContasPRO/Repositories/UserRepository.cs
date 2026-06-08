@@ -180,6 +180,40 @@ namespace GestaoDeContasPRO.Repositories
             return flag;
         }
 
+        public bool UpdateUserFavoriteProfile(User user)
+        {
+            bool flag = true;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = "UPDATE users SET favorite_profile_id = @favorite_profile_id WHERE id = @id";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", user.Id);
+                        cmd.Parameters.AddWithValue("@favorite_profile_id", user.FavoriteProfileId);
+
+
+                        cmd.ExecuteScalar();
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("UserRepository - UpdateUserFavoriteProfile: " + ex.Message);
+            }
+
+            return flag;
+        }
+
         public bool UpdateOtp(User user)
         {
             bool flag = true;

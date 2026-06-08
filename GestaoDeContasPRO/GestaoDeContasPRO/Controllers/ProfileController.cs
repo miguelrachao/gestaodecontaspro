@@ -12,10 +12,12 @@ namespace GestaoDeContasPRO.Controllers
     {
         private readonly ProfileRepository _profileRepo;
         private readonly CategoryRepository _categoryRepo;
-        public ProfileController(ProfileRepository profileRepo, CategoryRepository categoryRepo)
+        private readonly UserRepository _userRepo;
+        public ProfileController(ProfileRepository profileRepo, CategoryRepository categoryRepo, UserRepository userRepo)
         {
             _profileRepo = profileRepo;
             _categoryRepo = categoryRepo;
+            _userRepo = userRepo;
         }
 
         [HttpGet]
@@ -82,6 +84,7 @@ namespace GestaoDeContasPRO.Controllers
             profile.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
 
             bool error = false;
+
             _profileRepo.GetProfile(ref profile, ref error);
 
             if (profile.Id != 0 && error != true)
@@ -118,6 +121,13 @@ namespace GestaoDeContasPRO.Controllers
 
             if (_profileRepo.UpdateProfile(profile))
             {
+
+                if (profile.Favorite)
+                {
+                    User user = new User(){ Id = profile.UserId, FavoriteProfileId = profile.Id};
+                    _userRepo.UpdateUserFavoriteProfile(user);
+                }
+
                 return Ok();
             }
             else
