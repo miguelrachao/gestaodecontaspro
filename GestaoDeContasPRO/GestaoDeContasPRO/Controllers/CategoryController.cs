@@ -50,15 +50,29 @@ namespace GestaoDeContasPRO.Controllers
         [HttpPut]
         public IActionResult Edit(Category category)
         {
-            category.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
 
-            if (_categoryRepo.UpdateCategory(category))
+            //VALIDATE PROFILE PERMISSION
+            Profile profile = new Profile();
+            profile.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+            profile.Id = category.ProfileId;
+            bool error = false;
+            _profileRepo.GetProfile(ref profile, ref error);
+
+
+            if (profile.Id != 0 && !error)
             {
-                return Ok(category);
+                if (_categoryRepo.UpdateCategory(category))
+                {
+                    return Ok(category);
+                }
+                else
+                {
+                    return StatusCode(500);
+                }
             }
             else
             {
-                return StatusCode(500);
+                return BadRequest();
             }
         }
     }

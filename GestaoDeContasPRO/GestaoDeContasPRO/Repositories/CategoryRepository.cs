@@ -116,26 +116,14 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = @"UPDATE categories c
+                    const string query = @"UPDATE categories 
 
-                                            LEFT JOIN profiles p 
-	                                            ON p.id = c.profile_id
-	
-                                            LEFT JOIN profile_shares ps
-	                                            ON ps.profile_id = p.id
-	                                            AND ps.user_id = @userId
-	
                                             SET 
-	                                            c.name = @name,
-	                                            c.action_type = @actionType,
-	                                            c.active = @active
+	                                            name = @name,
+	                                            action_type = @actionType,
+	                                            active = @active
 	
-                                            WHERE 
-	                                            c.id = @id
-	                                            AND (
-		                                            p.user_id = @userId
-		                                            OR ps.user_id = @userId
-	                                            )";
+                                            WHERE id = @id";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
@@ -143,7 +131,6 @@ namespace GestaoDeContasPRO.Repositories
                         cmd.Parameters.AddWithValue("@name", category.Name);
                         cmd.Parameters.AddWithValue("@actionType", category.Type.ToString());
                         cmd.Parameters.AddWithValue("@active", category.Active);
-                        cmd.Parameters.AddWithValue("@userId", category.UserId);
 
                         cmd.ExecuteNonQuery();
                     }

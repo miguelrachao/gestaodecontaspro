@@ -118,11 +118,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var category in Model.categories)
+                            @foreach (Category category in Model.categories)
                             {
                                 <form>
                                 <tr>
                                     <input type="hidden" name="Id" value="@category.Id" />
+                                    <input type="hidden" name="ProfileId" value="@category.ProfileId" />
                                     <td>
                                         <input type="text" name="Name" value="@category.Name" class="form-control" style="min-width: 100px;" />
                                     </td>

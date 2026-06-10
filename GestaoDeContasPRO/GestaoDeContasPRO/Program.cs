@@ -9,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<ProfileRepository>();
 builder.Services.AddSingleton<CategoryRepository>();
+builder.Services.AddSingleton<EntryRepository>();
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.Configure<Configurations>(builder.Configuration.GetSection("Configurations"));
