@@ -27,7 +27,7 @@ namespace GestaoDeContasPRO.Controllers
             List<Profile> profiles = new List<Profile>();
             int userId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
 
-            _profileRepo.GetUserAllProfiles(ref profiles, userId, ref error);
+            _profileRepo.GetUserProfiles(ref profiles, userId, active: null, ref error);
 
             dynamic model = new ExpandoObject();
             model.profiles = profiles;

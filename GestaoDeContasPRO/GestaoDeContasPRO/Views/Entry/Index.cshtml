@@ -6,7 +6,91 @@
         <h5 class="d-inline">Registos</h5>
     </div>
     <div class="card-body">
+        @{
+            if (Model.profiles.Count == 0)
+            {
+                <div class="text-center">
+                    <h5 class="mt-5">Para começar, <a href="~/Profile/Add">adicione um perfil</a></h5>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <form method="get">
+                        <select name="profileId" class="form-select form-control d-inline w-auto cursor-pointer m-1" onchange="this.form.submit()">
+                            @foreach (Profile profile in Model.profiles)
+                            {
+                                <option value="@profile.Id" selected="@(profile.Id == Model.profileId)">
+                                    @profile.Name
+                                </option>
+                            }
+                        </select>
+                        <select name="categoryId" class="form-select form-control d-inline w-auto cursor-pointer m-1" onchange="this.form.submit()">
+                            <option value="0">Todas</option>
+                            @foreach (Category category in Model.categories)
+                            {
+                                <option value="@category.Id" selected="@(category.Id == Model.categoryId)">
+                                    @category.Name
+                                </option>
+                            }
+                        </select>
+                        <input name="startDate" type="date" class="form-control d-inline cursor-pointer m-1" style="width:150px;" onchange="this.form.submit()" value="@Model.startDate" />
+                        <input name="endDate" type="date" class="form-control d-inline cursor-pointer m-1" style="width:150px;" onchange="this.form.submit()" value="@Model.endDate" />
+                    </form>
+                </div>
+                <hr />
+            }
 
+            if(Model.entries.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (Entry entry in Model.entries)
+                                {
+                                    <tr>
+                                        <td>@entry.Category.Name</td>
+                                        <td>@entry.Description</td>
+                                        <td>
+                                            @{
+                                                if (entry.Category.Type == ActionType.DEBIT)
+                                                {
+                                                    <span style="color:red;">@entry.Amount.ToString("f")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:green;">@entry.Amount.ToString("f")</span>
+                                                }
+                                            }
 
+                                        </td>
+                                        <td>@entry.Date</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="p-4">Nenhum registo encontrado!</p>
+            }
+        }
     </div>
 </div>
+
+
+
+
+
+

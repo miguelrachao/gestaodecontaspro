@@ -7,23 +7,30 @@
     }
     else
     {
-        if (Model.favoriteProfile.Id == 0)
+        if (Model.profiles.Count == 0)
         {
-            if (Model.profiles.Count == 0)
-            {
-                <div class="text-center">
-                    <h3 class="mt-5">Bem vindo ao gestor de contas</h3>
-                    <h5 class="mt-5">Para começar, <a href="~/Profile/Add">adicione um perfil</a></h5>
-                </div>
-            }
-            else
-            {
-                <p>Apresenta perfis para colocar como favorito.</p>
-            }
+            <div class="text-center">
+                <h3 class="mt-5">Bem vindo ao gestor de contas</h3>
+                <h5 class="mt-5">Para começar, <a href="~/Profile/Add">adicione um perfil</a></h5>
+            </div>
         }
         else
         {
-            <p>Apresenta categorias do perfil @Model.favoriteProfile.Name</p>
+            <div>
+                <form method="get">
+                    <select name="profileId" class="form-select form-control d-inline" style="width:100px; cursor:pointer;" onchange="this.form.submit()">
+                        @foreach (var profile in Model.profiles)
+                        {
+                            <option value="@profile.Id" selected="@(profile.Id == Model.profileId)">
+                                @profile.Name
+                            </option>
+                        }
+                    </select>
+                    <input name="startDate" type="date" class="form-control d-inline" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.startDate"/>
+                    <input name="endDate" type="date" class="form-control d-inline" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.endDate" />
+                </form>
+            </div>
+            
         }
     }
     

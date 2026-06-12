@@ -18,7 +18,7 @@ namespace GestaoDeContasPRO.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        public IActionResult Index(int? profileId, DateTime? startDate, DateTime? endDate)
         {
             bool error = false;
             dynamic model = new ExpandoObject();
@@ -26,28 +26,24 @@ namespace GestaoDeContasPRO.Controllers
             User currentUser = new User();
             currentUser.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
 
-            Profile favoriteProfile = new Profile();
-            favoriteProfile.UserId = currentUser.Id;
-
-            // GET USER FAVORITE PROFILE
-            if (_profileRepo.GetUserFavoriteProfile(ref favoriteProfile, ref error)){
-
-                // OBTEM CATEGORIAS DESSE PROFILE
-                // OBTEM REGISTOS DESSE PROFILE CONSOANTE MES SELECIONADO?
-            }
-            else
+            if (!error)
             {
-                if (!error)
-                {
-                    // GET PROFILES TO CHOOSE FAVORITE PROFILE
-                    List<Profile> profiles = new List<Profile>();
-                    _profileRepo.GetUserAllProfiles(ref profiles, currentUser.Id, ref error);
+                List<Profile> profiles = new List<Profile>();
+                _profileRepo.GetUserProfiles(ref profiles, currentUser.Id, active:true, ref error);
 
-                    model.profiles = profiles;
+                if(profileId == null)
+                {
+                    profileId = profiles.First().Id;
                 }
+
+
+
+                model.profiles = profiles;
+                model.profileId = profileId;
+                model.startDate = startDate?.ToString("yyyy-MM-dd");
+                model.endDate = endDate?.ToString("yyyy-MM-dd");
             }
 
-            model.favoriteProfile = favoriteProfile;
             model.error = error;
 
             return View(model);
