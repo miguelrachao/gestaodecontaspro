@@ -4,6 +4,7 @@
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="d-inline">Registos</h5>
+        <a href="~/Entry/Add"><img src="~/img/add.png" style="width:28px;" class="ms-1" /></a>
     </div>
     <div class="card-body">
         @{
@@ -43,6 +44,12 @@
 
             if(Model.entries.Count > 0)
             {
+                <div class="d-flex flex-wrap gap-2">
+                    <div>Créditos: <b style="color: green;">@Model.credit.ToString("F")</b></div>
+                    <div>Débitos: <b style="color: red;">@Model.debit.ToString("F")</b></div>
+                    <div>Diferença: <b style="color: @(Model.balance > 0 ? "green" : "red");">@Model.balance.ToString("F")</b></div>
+                </div>
+                <hr />
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -58,22 +65,22 @@
                                 foreach (Entry entry in Model.entries)
                                 {
                                     <tr>
-                                        <td>@entry.Category.Name</td>
+                                        <td><a href="#" class="link-light">@entry.Category.Name</a></td>
                                         <td>@entry.Description</td>
                                         <td>
                                             @{
                                                 if (entry.Category.Type == ActionType.DEBIT)
                                                 {
-                                                    <span style="color:red;">@entry.Amount.ToString("f")</span>
+                                                    <span style="color:red;" class="fw-bold">@entry.Amount.ToString("f")</span>
                                                 }
                                                 else
                                                 {
-                                                    <span style="color:green;">@entry.Amount.ToString("f")</span>
+                                                    <span style="color:green;" class="fw-bold">@entry.Amount.ToString("f")</span>
                                                 }
                                             }
 
                                         </td>
-                                        <td>@entry.Date</td>
+                                        <td>@entry.Date.ToString("dd/MM HH:mm")</td>
                                     </tr>
                                 }
                             }

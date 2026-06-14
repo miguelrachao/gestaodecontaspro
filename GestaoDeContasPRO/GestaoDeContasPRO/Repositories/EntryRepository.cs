@@ -37,7 +37,8 @@ namespace GestaoDeContasPRO.Repositories
                                            AND (@categoryId = 0 OR c.id = @categoryId)
                                            AND (@startDate IS NULL OR DATE(e.date) >= DATE(@startDate))
                                            AND (@endDate IS NULL OR DATE(e.date) <= DATE(@endDate))
-                                           AND (p.user_id = @userId OR ps.user_id = @userId)";
+                                           AND (p.user_id = @userId OR ps.user_id = @userId)
+                                           ORDER BY e.date DESC";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {

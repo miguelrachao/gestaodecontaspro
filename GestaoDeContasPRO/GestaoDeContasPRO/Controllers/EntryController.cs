@@ -20,7 +20,6 @@ namespace GestaoDeContasPRO.Controllers
             _entryRepo = entryRepo;
         }
 
-
         public IActionResult Index(int profileId, int categoryId, DateTime? startDate, DateTime? endDate)
         {
             bool error = false;
@@ -54,6 +53,16 @@ namespace GestaoDeContasPRO.Controllers
             List<Entry> entries = new List<Entry>();
             _entryRepo.GetProfileEntries(ref entries, profileId, categoryId, startDate, endDate, currentUser.Id, ref error);
 
+            double credit = entries
+            .Where(e => e.Category.Type == ActionType.CREDIT)
+            .Sum(e => e.Amount);
+
+            double debit = entries
+                .Where(e => e.Category.Type == ActionType.DEBIT)
+                .Sum(e => e.Amount);
+
+            double balance = credit - debit;
+
             model.profiles = profiles;
             model.profileId = profileId;
             model.categoryId = categoryId;
@@ -61,6 +70,9 @@ namespace GestaoDeContasPRO.Controllers
             model.endDate = endDate?.ToString("yyyy-MM-dd");
             model.categories = categories;
             model.entries = entries;
+            model.credit = credit;
+            model.debit = debit;
+            model.balance = balance;
 
             if (error)
             {
@@ -71,6 +83,11 @@ namespace GestaoDeContasPRO.Controllers
                 return View(model);
             }
 
+        }
+
+        public IActionResult Add()
+        {
+            return View();
         }
     }
 }

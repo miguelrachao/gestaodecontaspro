@@ -38,3 +38,8 @@ body {
 .cursor-pointer{
     cursor: pointer;
 }
+
+.form-control[type="date"] {
+    -webkit-appearance: auto;
+    appearance: auto;
+}

@@ -36,7 +36,16 @@ namespace GestaoDeContasPRO.Controllers
                     profileId = profiles.First().Id;
                 }
 
+                // DATE VALIDATIONS ------------------------------
+                // DEFAULT VALUES = CURRENT MONTH
+                DateTime today = DateTime.Today;
 
+                DateTime monthStart = new(today.Year, today.Month, 1);
+                DateTime monthEnd = monthStart.AddMonths(1).AddTicks(-1);
+
+                startDate ??= monthStart;
+                endDate ??= monthEnd;
+                // DATE VALIDATIONS ------------------------------
 
                 model.profiles = profiles;
                 model.profileId = profileId;
