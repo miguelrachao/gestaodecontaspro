@@ -85,9 +85,120 @@ namespace GestaoDeContasPRO.Controllers
 
         }
 
-        public IActionResult Add()
+        [HttpGet]
+        public IActionResult Add(int profileId, int categoryId)
         {
-            return View();
+
+            bool error = false;
+            dynamic model = new ExpandoObject();
+
+            User currentUser = new User();
+            currentUser.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            List<Profile> profiles = new List<Profile>();
+            _profileRepo.GetUserProfiles(ref profiles, currentUser.Id, active: true, ref error);
+
+            if (profileId == 0)
+            {
+                profileId = profiles.First().Id;
+            }
+
+            List<Category> categories = new List<Category>();
+            _categoryRepo.GetProfileCategories(ref categories, profileId, ref error);
+
+            model.profileId = profileId;
+            model.categoryId = categoryId;
+            model.profiles = profiles;
+            model.categories = categories;
+            
+            if (error)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Add(Entry entry)
+        {
+            Profile profile = new Profile();
+            profile.Id = entry.ProfileId;
+            profile.UserId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            bool error = false;
+
+            _profileRepo.GetProfile(ref profile, ref error);
+
+            if (profile.Id != 0 && error != true)
+            {
+                if (_entryRepo.PostEntry(entry))
+                {
+                    return Ok();
+                }
+            }
+
+            return StatusCode(500);
+            
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            bool error = false;
+            dynamic model = new ExpandoObject();
+
+            User currentUser = new User();
+            currentUser.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+
+            Entry entry = new Entry();
+            entry.Id = id;
+
+            if(_entryRepo.GetEntry(ref entry, currentUser.Id))
+            {
+                List<Category> categories = new List<Category>();
+                _categoryRepo.GetProfileCategories(ref categories, entry.ProfileId, ref error);
+
+                model.categories = categories;
+                model.entry = entry;
+            }
+            else
+            {
+                error = true;
+            }
+
+            
+            if (error)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult Edit(Entry entry)
+        {
+            User currentUser = new User();
+            currentUser.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            Entry checkEntry = new Entry();
+            checkEntry.Id = entry.Id;
+
+            if (_entryRepo.GetEntry(ref checkEntry, currentUser.Id))
+            {
+                if (_entryRepo.UpdateEntry(entry))
+                {
+                    return Ok();
+                }
+            }
+
+            return StatusCode(500);
         }
     }
 }

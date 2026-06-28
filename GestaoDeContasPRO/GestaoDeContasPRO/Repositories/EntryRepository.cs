@@ -86,6 +86,68 @@ namespace GestaoDeContasPRO.Repositories
             }
         }
 
+        public bool GetEntry(ref Entry entry, int userId)
+        {
+            bool flag = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = @"SELECT e.id, e.profile_id, e.category_id, c.name category_name, c.action_type category_type, e.amount, e.description, e.date
+                                           FROM entries e
+                                           INNER JOIN profiles p ON p.id = e.profile_id
+                                           LEFT JOIN profile_shares ps ON ps.profile_id = e.profile_id AND ps.user_id = @userId
+                                           INNER JOIN users u ON u.id = p.user_id
+                                           INNER JOIN categories c ON c.id = e.category_id
+                                           WHERE e.id = @id
+                                           AND (p.user_id = @userId OR ps.user_id = @userId)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", entry.Id);
+                        cmd.Parameters.AddWithValue("@userId", userId);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                dr.Read();
+
+                                entry.ProfileId = (int)dr["profile_id"];
+                                entry.Category = new Category
+                                {
+                                    Id = (int)dr["category_id"],
+                                    Name = (string)dr["category_name"],
+                                    Type = Enum.Parse<ActionType>(dr["category_type"].ToString()!),
+                                };
+                                entry.Amount = Convert.ToDouble(dr["amount"]);
+                                entry.Description = (string)dr["description"];
+                                entry.Date = (DateTime)dr["Date"];
+
+                                dr.Close();
+
+                                flag = true;
+
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                flag = false;
+
+                _helpers.CreateLog("EntryRepository - GetEntry: " + ex.Message);
+            }
+
+            return flag;
+        }
+
         public bool PostEntry(Entry entry)
         {
             bool flag = true;
@@ -96,18 +158,28 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = "INSERT INTO entries(profile_id, category_id, ammount, description, date) " +
-                        "                 VALUES(@profile_id, @category_id, @ammount, @description, @date)";
+                    const string query = @"
+                        INSERT INTO entries(profile_id, category_id, amount, description, date)
+                        SELECT @profile_id, @category_id, @amount, @description, @date
+                        FROM categories
+                        WHERE id = @category_id
+                          AND profile_id = @profile_id";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
                         cmd.Parameters.AddWithValue("@profile_id", entry.ProfileId);
                         cmd.Parameters.AddWithValue("@category_id", entry.Category.Id);
-                        cmd.Parameters.AddWithValue("@ammount", entry.Amount);
+                        cmd.Parameters.AddWithValue("@amount", entry.Amount);
                         cmd.Parameters.AddWithValue("@description", entry.Description);
                         cmd.Parameters.AddWithValue("@date", entry.Date);
 
-                        cmd.ExecuteNonQuery();
+                        int rows = cmd.ExecuteNonQuery();
+
+                        if (rows == 0)
+                        {
+                            flag = false;
+                        }
+
                     }
 
                     Conn.Close();
@@ -133,18 +205,28 @@ namespace GestaoDeContasPRO.Repositories
                 {
                     Conn.Open();
 
-                    const string query = @"UPDATE entries SET category_id = @category_id, ammount = @ammount,
-                                           description = @description, date = @date WHERE id = @id";
+                    const string query = @"UPDATE entries e
+                                JOIN categories c ON c.id = e.category_id
+                                SET e.category_id = @category_id,
+                                    e.amount = @amount,
+                                    e.description = @description,
+                                    e.date = @date
+                                WHERE e.id = @id";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
                         cmd.Parameters.AddWithValue("@id", entry.Id);
                         cmd.Parameters.AddWithValue("@category_id", entry.Category.Id);
-                        cmd.Parameters.AddWithValue("@ammount", entry.Amount);
+                        cmd.Parameters.AddWithValue("@amount", entry.Amount);
                         cmd.Parameters.AddWithValue("@description", entry.Description);
                         cmd.Parameters.AddWithValue("@date", entry.Date);
 
-                        cmd.ExecuteNonQuery();
+                        int rows = cmd.ExecuteNonQuery();
+
+                        if (rows == 0)
+                        {
+                            flag = false;
+                        }
                     }
 
                     Conn.Close();

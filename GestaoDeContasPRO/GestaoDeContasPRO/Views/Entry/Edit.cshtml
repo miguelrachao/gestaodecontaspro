@@ -1,27 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Adicionar registo";
+    ViewData["Title"] = "Editar registo";
 }
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="d-inline">Adicionar registo</h5>
+        <h5 class="d-inline">Editar registo</h5>
     </div>
     <div class="card-body">
         <form id="EntryForm" name="EntryForm" autocomplete="off" style="margin-bottom: 10px;">
+            <input type="text" name="id" value="@Model.entry.Id" hidden/>
             <div class="row">
                 <div class="col-sm p-2">
                     <label for="Amount" class="fw-bold">Montante</label>
-                    <input type="number" inputmode="decimal" id="Amount" name="Amount" class="form-control" step="0.01">
-                </div>
-                <div class="col-sm p-2">
-                    <label for="ProfileId" class="fw-bold">Perfil</label>
-                    <select name="ProfileId" id="ProfileId" class="form-select form-control cursor-pointer" onchange="this.form.submit()">
-                        @foreach (Profile profile in Model.profiles)
-                        {
-                            <option value="@profile.Id" selected="@(profile.Id == Model.profileId)">
-                                @profile.Name
-                            </option>
-                        }
-                    </select>
+                    <input type="number" inputmode="decimal" id="Amount" name="Amount" class="form-control" step="0.01" value="@Model.entry.Amount.ToString("F2")">
                 </div>
                 <div class="col-sm p-2">
                     <label for="categoryId" class="fw-bold">Categoria</label>
@@ -29,7 +19,7 @@
                         <option value="0">Selecionar</option>
                         @foreach (Category category in Model.categories)
                         {
-                            <option value="@category.Id" selected="@(category.Id == Model.categoryId)">
+                            <option value="@category.Id" selected="@(category.Id == Model.entry.Category.Id)">
                                 @category.Name
                             </option>
                         }
@@ -37,13 +27,13 @@
                 </div>
                 <div class="col-sm p-2">
                     <label for="date" class="fw-bold">Data</label>
-                    <input type="datetime-local" class="form-control" name="Date" id="Date" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+                    <input type="datetime-local" class="form-control" name="Date" id="Date" value="@Model.entry.Date.ToString("yyyy-MM-ddTHH:mm")">
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm p-2">
                     <label for="Description" class="fw-bold">Descrição</label>
-                    <textarea class="form-control" name="Description"></textarea>
+                    <textarea class="form-control" name="Description">@Model.entry.Description</textarea>
                 </div>
             </div>
             <div class="row">
@@ -58,7 +48,7 @@
 <script>
     jQuery(document).ready(function () {
         jQuery('#EntryForm').submit(function () {
-            
+
             let amount = document.getElementById("Amount");
             let categoryId = document.getElementById("CategoryId");
             let date = document.getElementById("Date");
@@ -91,14 +81,14 @@
                     if (result.isConfirmed) {
                         $('#EntryForm').addClass('form-blocked');
                         jQuery.ajax({
-                            type: "POST",
-                            url: baseUrl + "Entry/Add",
+                            type: "PUT",
+                            url: baseUrl + "Entry/Edit",
                             data: new FormData(document.getElementById("EntryForm")),
                             mimeType: "multipart/form-data",
                             contentType: false,
                             processData: false,
                             success: function (data, textStatus, jqXHR) {
-                                successReloadToURL(baseUrl + "Entry?profileId=@Model.profileId&categoryId=@Model.categoryId");
+                                successAlert();
                                 $('#EntryForm').removeClass('form-blocked');
                             },
                             error: function (jqXHR) {

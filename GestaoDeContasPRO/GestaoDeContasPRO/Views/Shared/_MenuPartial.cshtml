@@ -1,22 +1,36 @@
-﻿<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+﻿@{
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+}
+
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
     <ul class="navbar-nav flex-grow-1">
         <li class="nav-item">
-            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Início</a>
+            <a class="nav-link @((currentController == "Home" && currentAction == "Index") || (currentController == "Account" && currentAction == "Login") ? "active fw-bold" : "")" asp-area="" asp-controller="Home" asp-action="Index">Início</a>
         </li>
         @{
             if (User?.Identity?.IsAuthenticated == false)
             {
                 <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">Sobre</a>
+                    <a class="nav-link @(currentAction == "About" ? "active fw-bold" : "") asp-area="" asp-controller="Home" asp-action="About">Sobre</a>
                 </li>
             }
             else
             {
                 <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Profile" asp-action="Index">Perfis</a>
+                    <a class="nav-link @(currentController == "Profile" ? "active fw-bold" : "")"
+                       asp-controller="Profile"
+                       asp-action="Index">
+                        Perfis
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Entry" asp-action="Index">Registos</a>
+                    <a class="nav-link @(currentController == "Entry" ? "active fw-bold" : "")"
+                       asp-controller="Entry"
+                       asp-action="Index">
+                        Registos
+                    </a>
                 </li>
             }
 

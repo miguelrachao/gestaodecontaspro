@@ -2,17 +2,27 @@
 <html lang="pt-pt" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewData["Title"] - Gestão de contas</title>
     <script>const baseUrl = '@Url.Content("~/")';</script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.5.3.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GestaoDeContasPRO.styles.css" asp-append-version="true" />
     <script src="~/js/sweetalert2V11.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <link rel="icon" type="image/x-icon" href="~/img/favicon.ico">
+    <link rel="icon" href="~/favicon.ico">
+    <link rel="apple-touch-icon" sizes="48x48" href="~/icons/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="~/icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="~/icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="~/icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="~/icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="~/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="~/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="256x256" href="~/icons/icon-256x256.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="~/icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="~/icons/icon-512x512.png">
     <link rel="manifest" href="~/manifest.json">
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header>
@@ -28,16 +38,15 @@
         </nav>
     </header>
     <div class="container">
+        <div id="globalLoading" style="display:none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-    </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Gestão de Contas
-        </div>
-    </footer>
-    
+    </div>   
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

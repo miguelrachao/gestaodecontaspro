@@ -76,3 +76,32 @@ function successReloadToURL(url) {
         window.location.href = url;
     }, 700);
 }
+
+/* LOADING SCREEN -------- */
+function showLoading() {
+    document.getElementById("globalLoading").style.display = "flex";
+}
+
+function hideLoading() {
+    document.getElementById("globalLoading").style.display = "none";
+}
+
+document.addEventListener("click", function (e) {
+    const link = e.target.closest("a");
+
+    if (!link) return;
+
+    // ignora links externos, anchors e downloads
+    if (
+        link.target === "_blank" ||
+        link.href.includes("#") ||
+        link.hasAttribute("download")
+    ) return;
+
+    showLoading();
+});
+
+window.addEventListener("load", function () {
+    hideLoading();
+});
+/* LOADING SCREEN -------- */

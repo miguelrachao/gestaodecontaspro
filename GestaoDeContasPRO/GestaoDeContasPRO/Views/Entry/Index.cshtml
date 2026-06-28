@@ -4,7 +4,7 @@
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="d-inline">Registos</h5>
-        <a href="~/Entry/Add"><img src="~/img/add.png" style="width:28px;" class="ms-1" /></a>
+        <a href="~/Entry/Add?profileId=@Model.profileId&categoryId=@Model.categoryId"><img src="~/img/add.png" style="width:28px;" class="ms-1" /></a>
     </div>
     <div class="card-body">
         @{
@@ -35,8 +35,8 @@
                                 </option>
                             }
                         </select>
-                        <input name="startDate" type="date" class="form-control d-inline cursor-pointer m-1" style="width:150px;" onchange="this.form.submit()" value="@Model.startDate" />
-                        <input name="endDate" type="date" class="form-control d-inline cursor-pointer m-1" style="width:150px;" onchange="this.form.submit()" value="@Model.endDate" />
+                        <input name="startDate" type="date" class="form-control d-inline cursor-pointer m-1" style="width:160px; font-size: 11pt;" onchange="this.form.submit()" value="@Model.startDate" />
+                        <input name="endDate" type="date" class="form-control d-inline cursor-pointer m-1" style="width:160px; font-size: 11pt;" onchange="this.form.submit()" value="@Model.endDate" />
                     </form>
                 </div>
                 <hr />
@@ -44,14 +44,14 @@
 
             if(Model.entries.Count > 0)
             {
-                <div class="d-flex flex-wrap gap-2">
-                    <div>Créditos: <b style="color: green;">@Model.credit.ToString("F")</b></div>
-                    <div>Débitos: <b style="color: red;">@Model.debit.ToString("F")</b></div>
-                    <div>Diferença: <b style="color: @(Model.balance > 0 ? "green" : "red");">@Model.balance.ToString("F")</b></div>
+                <div class="d-flex flex-wrap gap-2 fw-bold">
+                    <div>Créditos: <b class="green">@Model.credit.ToString("F2")</b></div>
+                    <div>Débitos: <b class="red">@Model.debit.ToString("F2")</b></div>
+                    <div>Diferença: <b class="@(Model.balance > 0 ? "green" : "red")">@Model.balance.ToString("F2")</b></div>
                 </div>
                 <hr />
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table" id="table">
                         <thead>
                             <tr>
                                 <th>Categoria</th>
@@ -65,17 +65,17 @@
                                 foreach (Entry entry in Model.entries)
                                 {
                                     <tr>
-                                        <td><a href="#" class="link-light">@entry.Category.Name</a></td>
+                                        <td><a href="~/Entry/Edit/@entry.Id" class="link-light">@entry.Category.Name</a></td>
                                         <td>@entry.Description</td>
                                         <td>
                                             @{
                                                 if (entry.Category.Type == ActionType.DEBIT)
                                                 {
-                                                    <span style="color:red;" class="fw-bold">@entry.Amount.ToString("f")</span>
+                                                    <span class="fw-bold red">@entry.Amount.ToString("F2")</span>
                                                 }
                                                 else
                                                 {
-                                                    <span style="color:green;" class="fw-bold">@entry.Amount.ToString("f")</span>
+                                                    <span class="fw-bold green">@entry.Amount.ToString("F2")</span>
                                                 }
                                             }
 
@@ -95,8 +95,6 @@
         }
     </div>
 </div>
-
-
 
 
 

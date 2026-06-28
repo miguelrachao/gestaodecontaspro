@@ -1,6 +1,6 @@
 {
-  "name": "Gestão de contas",
   "short_name": "Gestão de contas",
+  "name": "Gestão de Contas",
   "icons": [
     {
       "src": "icons/icon-48x48.png",
@@ -53,8 +53,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "start_url": "home",
+  "background_color": "#212529",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000"
+  "theme_color": "#212529"
 }
