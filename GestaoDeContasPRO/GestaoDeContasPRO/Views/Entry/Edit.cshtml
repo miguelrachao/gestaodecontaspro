@@ -37,8 +37,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm">
-                    <input type="submit" value="Guardar" id="SubmitButton" class="btn btn-primary mt-4" />
+                <div class="col d-flex justify-content-between">
+                    <div class="left">
+                        <input type="submit" value="Guardar" id="SubmitButton" class="btn btn-primary mt-4" />
+                    </div>
+                    <div class="right">
+                        <button type="button" class="btn btn-outline-danger  mt-4" onclick="deleteEntry(@Model.entry.Id)">Eliminar registo</button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -102,4 +107,36 @@
             return false;
         });
     });
+
+
+    function deleteEntry(id){
+         swal.fire({
+                    title: "Confirma a remoção?",
+                    icon: 'warning',
+                    background: '#212529',
+                    color: '#fff',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0D6EFD',
+                    confirmButtonText: 'Sim!',
+                    cancelButtonColor: '#6D757D',
+                    cancelButtonText: "Cancelar!",
+                    customClass: {
+                        confirmButton: 'btn-size',
+                        cancelButton: 'btn-size'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        jQuery.ajax({
+                            type: "DELETE",
+                            url: baseUrl + "Entry/Delete/" + id,
+                            success: function (data, textStatus, jqXHR) {
+                                successReloadToURL(baseUrl + "Entry");
+                            },
+                            error: function (jqXHR) {
+                                errorAlert("Ocorreu um erro!");
+                            }
+                        });
+                    }
+                });
+    }
 </script>

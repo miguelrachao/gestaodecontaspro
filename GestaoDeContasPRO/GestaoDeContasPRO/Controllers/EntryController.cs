@@ -200,5 +200,25 @@ namespace GestaoDeContasPRO.Controllers
 
             return StatusCode(500);
         }
+
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            User currentUser = new User();
+            currentUser.Id = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+
+            Entry entry = new Entry();
+            entry.Id = id;
+
+            if (_entryRepo.GetEntry(ref entry, currentUser.Id))
+            {
+                if (_entryRepo.DeleteEntry(id))
+                {
+                    return Ok();
+                }
+            }
+
+            return StatusCode(500);
+        }
     }
 }
