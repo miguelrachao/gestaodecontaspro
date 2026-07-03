@@ -4,10 +4,13 @@
 
 <div class="card mb-4">
     <div class="card-header">
-        <h5>Adicionar perfill</h5>
+        <h5 class="d-inline">
+            <a href="~/Profile"><img src="~/img/back.png" style="width:28px; margin-left: -5px;" /></a>
+            Adicionar perfill
+        </h5>
     </div>
     <div class="card-body">
-        <form class="minimal-form ms-4 me-4" id="AddProfileForm" name="AddProfileForm" autocomplete="off">
+        <form style="margin-bottom: 10px;" id="AddProfileForm" name="AddProfileForm" autocomplete="off">
             <div class="row">
                 <div class="col">
                     <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Nome</label>
@@ -16,7 +19,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <button type="submit" id="SubmitAddProfile" class="btn btn-primary w-100 p-2 mt-3 mb-4">Adicionar</button>
+                    <button type="submit" id="SubmitAddProfile" class="btn btn-primary mt-4">Adicionar</button>
                 </div>
             </div>
         </form>

@@ -18,7 +18,7 @@
         {
             <div>
                 <form method="get">
-                    <select name="profileId" class="form-select form-control d-inline" style="width:100px; cursor:pointer;" onchange="this.form.submit()">
+                    <select name="profileId" class="form-select form-control d-inline mb-2" style="width:100px; cursor:pointer;" onchange="this.form.submit()">
                         @foreach (var profile in Model.profiles)
                         {
                             <option value="@profile.Id" selected="@(profile.Id == Model.profileId)">
@@ -26,8 +26,8 @@
                             </option>
                         }
                     </select>
-                    <input name="startDate" type="date" class="form-control d-inline" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.startDate"/>
-                    <input name="endDate" type="date" class="form-control d-inline" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.endDate" />
+                    <input name="startDate" type="date" class="form-control d-inline mb-2" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.startDate"/>
+                    <input name="endDate" type="date" class="form-control d-inline mb-2" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.endDate" />
                 </form>
             </div>
             

@@ -71,3 +71,7 @@ body {
     justify-content: center;
     z-index: 9999;
 }
+
+.swal2-popup {
+    max-width: 90% !important;
+}

@@ -4,7 +4,7 @@
         title: message,
         icon: 'warning',
         background: '#212529',
-        color: '#fff',
+        color: '#fff'
     });
 }
 
@@ -14,7 +14,7 @@ function infoAlert(message) {
         title: message,
         icon: 'info',
         background: '#212529',
-        color: '#fff',
+        color: '#fff'
     });
 }
 
@@ -24,7 +24,7 @@ function errorAlert(message) {
         title: message,
         icon: 'error',
         background: '#212529',
-        color: '#fff',
+        color: '#fff'
     });
 }
 
@@ -37,7 +37,7 @@ function successAlert() {
         showConfirmButton: false,
         timer: 700,
         background: '#212529',
-        color: '#fff',
+        color: '#fff'
     });
 }
 
@@ -49,7 +49,7 @@ function successReload() {
         icon: 'success',
         showConfirmButton: false,
         background: '#212529',
-        color: '#fff',
+        color: '#fff'
     }).then((result) => {
         location.reload();
     });
@@ -67,7 +67,7 @@ function successReloadToURL(url) {
         icon: 'success',
         showConfirmButton: false,
         background: '#212529',
-        color: '#fff',
+        color: '#fff'
     }).then((result) => {
         window.location.href = url;
     });
@@ -88,20 +88,25 @@ function hideLoading() {
 
 document.addEventListener("click", function (e) {
     const link = e.target.closest("a");
-
     if (!link) return;
 
-    // ignora links externos, anchors e downloads
     if (
         link.target === "_blank" ||
-        link.href.includes("#") ||
-        link.hasAttribute("download")
-    ) return;
+        link.hasAttribute("download") ||
+        link.getAttribute("href") === "#" ||
+        link.href.startsWith("javascript:")
+    ) {
+        return;
+    }
 
     showLoading();
 });
 
-window.addEventListener("load", function () {
-    hideLoading();
+window.addEventListener("load", hideLoading);
+window.addEventListener("pageshow", hideLoading);
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        hideLoading();
+    }
 });
 /* LOADING SCREEN -------- */
