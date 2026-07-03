@@ -11,10 +11,12 @@ namespace GestaoDeContasPRO.Controllers
     public class HomeController : Controller
     {
         private readonly ProfileRepository _profileRepo;
+        private readonly DashboardRepository _dashRepo;
 
-        public HomeController(ProfileRepository profileRepo)
+        public HomeController(ProfileRepository profileRepo, DashboardRepository dashRepo)
         {
             _profileRepo = profileRepo;
+            _dashRepo = dashRepo;
         }
 
         [Authorize]
@@ -47,10 +49,15 @@ namespace GestaoDeContasPRO.Controllers
                 endDate ??= monthEnd;
                 // DATE VALIDATIONS ------------------------------
 
+                List<Entry> entriesAmount = new List<Entry>();
+                _dashRepo.GetEntriesAmountByCategory(ref entriesAmount, profileId ?? 0, startDate, endDate, currentUser.Id, ref error);
+
+
                 model.profiles = profiles;
                 model.profileId = profileId;
                 model.startDate = startDate?.ToString("yyyy-MM-dd");
                 model.endDate = endDate?.ToString("yyyy-MM-dd");
+                model.entriesAmount = entriesAmount;
             }
 
             model.error = error;

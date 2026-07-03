@@ -116,6 +116,7 @@
                             <tr>
                                 <th>Nome</th>
                                 <th>Tipo</th>
+                                <th>Orçamento</th>
                                 <th>Ativo</th>
                                 <th></th>
                             </tr>
@@ -137,6 +138,9 @@
                                                 <option value="@type" selected="@(type == category.Type)">@type.GetDisplayName()</option>
                                             }
                                         </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" inputmode="decimal" id="Budget" name="Budget" class="form-control" step="0.01" value="@category.Budget.ToString("F2")">
                                     </td>
                                     <td>
                                         <select name="Active" id="Active" class="form-select form-control" style="min-width: 100px;">
@@ -189,6 +193,11 @@
                                     </option>
                                 } 
                             </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="number" inputmode="decimal" id="Budget" name="Budget" class="form-control" step="0.01" value="0">
                         </div>
                     </div>
                     <div class="row">
@@ -279,12 +288,16 @@
         jQuery('#AddCategoryForm').submit(function () {
             let name = AddCategoryForm.Name;
             let type = AddCategoryForm.Type;
+            let budget = AddCategoryForm.Budget;
             if (name.value == "") {
                 name.focus();
                 warningAlert("Por favor, preencha o nome!");
             }else if (type.value == "") {
                 type.focus();
                 warningAlert("Por favor, selecione o tipo!");
+            }else if (budget.value == "") {
+                budget.focus();
+                warningAlert("Por favor, indique o orçamento!");
             }else {
                 swal.fire({
                     title: "Confirma os dados inseridos?",
@@ -375,6 +388,7 @@
 
         let name = form.Name;
         let type = form.Type;
+        let budget = form.Budget;
 
         if (name.value == "") {
             name.focus();
@@ -382,6 +396,9 @@
         }else if (type.value == "") {
             type.focus();
             warningAlert("Por favor, selecione o tipo!");
+        }else if (budget.value == "") {
+            budget.focus();
+            warningAlert("Por favor, indique o orçamento!");
         }else {
             swal.fire({
                 title: "Confirma os dados inseridos?",

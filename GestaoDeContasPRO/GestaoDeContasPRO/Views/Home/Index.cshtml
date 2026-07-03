@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Globalization
+@{
     ViewData["Title"] = "Início";
 
     if (Model.error)
@@ -30,8 +31,62 @@
                     <input name="endDate" type="date" class="form-control d-inline mb-2" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.endDate" />
                 </form>
             </div>
-            
+
+            <div class="row g-2">
+
+                @foreach (Entry entry in Model.entriesAmount)
+                {
+                    <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+
+                        <div class="stats-card">
+                            <div class="stats-category">
+                                @entry.Category.Name
+                            </div>
+
+                            <div class="stats-value">
+                                @entry.Amount.ToString("N2", new CultureInfo("pt-PT")) €
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
         }
     }
     
 }
+
+<style>
+
+    .stats-card {
+        background: #252a33;
+        border: 1px solid rgba(255,255,255,.06);
+        border-radius: 10px;
+        padding: 10px 12px;
+        transition: .15s;
+    }
+
+        .stats-card:hover {
+            background: #2d333d;
+            border-color: rgba(255,255,255,.15);
+        }
+
+    .stats-category {
+        color: #fff;
+        font-size: .95rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stats-value {
+        margin-top: 2px;
+        color: #8ddf7a;
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+</style>

@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<ProfileRepository>();
+builder.Services.AddSingleton<DashboardRepository>();
 builder.Services.AddSingleton<CategoryRepository>();
 builder.Services.AddSingleton<EntryRepository>();
 

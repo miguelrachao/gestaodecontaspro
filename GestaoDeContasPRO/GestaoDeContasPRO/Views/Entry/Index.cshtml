@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Globalization
+@{
     ViewData["Title"] = "Registos";
 }
 <div class="card mb-4">
@@ -45,9 +46,9 @@
             if(Model.entries.Count > 0)
             {
                 <div class="d-flex flex-wrap gap-2 fw-bold">
-                    <div>Créditos: <b class="green">@Model.credit.ToString("F2")</b></div>
-                    <div>Débitos: <b class="red">@Model.debit.ToString("F2")</b></div>
-                    <div>Diferença: <b class="@(Model.balance > 0 ? "green" : "red")">@Model.balance.ToString("F2")</b></div>
+                    <div>Créditos: <b class="green">@Model.credit.ToString("N2", new CultureInfo("pt-PT"))</b></div>
+                    <div>Débitos: <b class="red">@Model.debit.ToString("N2", new CultureInfo("pt-PT"))</b></div>
+                    <div>Diferença: <b class="@(Model.balance > 0 ? "green" : "red")">@Model.balance.ToString("N2", new CultureInfo("pt-PT"))</b></div>
                 </div>
                 <hr />
                 <div class="table-responsive">
@@ -71,11 +72,11 @@
                                             @{
                                                 if (entry.Category.Type == ActionType.DEBIT)
                                                 {
-                                                    <span class="fw-bold red">@entry.Amount.ToString("F2")</span>
+                                                    <span class="fw-bold red">@entry.Amount.ToString("N2", new CultureInfo("pt-PT"))</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="fw-bold green">@entry.Amount.ToString("F2")</span>
+                                                    <span class="fw-bold green">@entry.Amount.ToString("N2", new CultureInfo("pt-PT"))</span>
                                                 }
                                             }
 
