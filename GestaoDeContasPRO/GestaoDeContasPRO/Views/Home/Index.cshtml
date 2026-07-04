@@ -17,76 +17,102 @@
         }
         else
         {
-            <div>
-                <form method="get">
-                    <select name="profileId" class="form-select form-control d-inline mb-2" style="width:100px; cursor:pointer;" onchange="this.form.submit()">
-                        @foreach (var profile in Model.profiles)
-                        {
-                            <option value="@profile.Id" selected="@(profile.Id == Model.profileId)">
-                                @profile.Name
-                            </option>
-                        }
-                    </select>
-                    <input name="startDate" type="date" class="form-control d-inline mb-2" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.startDate"/>
-                    <input name="endDate" type="date" class="form-control d-inline mb-2" style="width:150px; cursor: pointer;" onchange="this.form.submit()" value="@Model.endDate" />
-                </form>
-            </div>
+            <form method="get" class="mb-3">
+
+                <div class="filter-card">
+
+                    <div class="row g-2">
+
+                        <div class="col-12 col-lg-4">
+                            <div class="d-flex gap-2">
+
+                                <select name="profileId"
+                                        class="form-select form-control"
+                                        onchange="this.form.submit()">
+
+                                    @foreach (var profile in Model.profiles)
+                                    {
+                                        <option value="@profile.Id" selected="@(profile.Id == Model.profileId)">
+                                            @profile.Name
+                                        </option>
+                                    }
+
+                                </select>
+
+                                <a href="~/Entry/Add?profileId=@Model.profileId"><img src="~/img/add.png" style="width:28px;" class="ms-1 mt-2" /></a>
+
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-lg-4">
+                            <input name="startDate"
+                                   type="date"
+                                   class="form-control"
+                                   value="@Model.startDate"
+                                   onchange="this.form.submit()" />
+                        </div>
+
+                        <div class="col-6 col-lg-4">
+                            <input name="endDate"
+                                   type="date"
+                                   class="form-control"
+                                   value="@Model.endDate"
+                                   onchange="this.form.submit()" />
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
 
             <div class="row g-2">
 
                 @foreach (Entry entry in Model.entriesAmount)
                 {
+                    var percent = entry.Category.BudgetCoverage;
+
                     <div class="col-6 col-md-4 col-lg-3 col-xl-2">
 
-                        <div class="stats-card">
-                            <div class="stats-category">
-                                @entry.Category.Name
+                        <a asp-controller="Entry"
+                           asp-action="Index"
+                           asp-route-profileId="@entry.ProfileId"
+                           asp-route-categoryId="@entry.Category.Id"
+                           class="text-decoration-none">
+
+                            <div class="stats-card h-100">
+
+                                <div class="stats-category">
+                                    @entry.Category.Name
+                                </div>
+
+                                <div class="stats-value">
+                                    @entry.Amount.ToString("N2", new CultureInfo("pt-PT")) €
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+
+                                    <div class="progress flex-grow-1 me-2" style="height:4px;">
+                                        <div class="progress-bar @(percent > 100 ? "bg-danger" : percent >= 80 ? "bg-warning" : "bg-success")"
+                                             role="progressbar"
+                                             style="width:@Math.Min(percent, 100)%;"></div>
+                                    </div>
+
+                                    <small class="@(percent > 100 ? "text-danger" : percent >= 80 ? "text-warning" : "text-success")">
+                                        @percent.ToString("N0")%
+                                    </small>
+
+                                </div>
+
                             </div>
 
-                            <div class="stats-value">
-                                @entry.Amount.ToString("N2", new CultureInfo("pt-PT")) €
-                            </div>
-                        </div>
+                        </a>
 
                     </div>
                 }
 
             </div>
-
         }
     }
     
 }
-
-<style>
-
-    .stats-card {
-        background: #252a33;
-        border: 1px solid rgba(255,255,255,.06);
-        border-radius: 10px;
-        padding: 10px 12px;
-        transition: .15s;
-    }
-
-        .stats-card:hover {
-            background: #2d333d;
-            border-color: rgba(255,255,255,.15);
-        }
-
-    .stats-category {
-        color: #fff;
-        font-size: .95rem;
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .stats-value {
-        margin-top: 2px;
-        color: #8ddf7a;
-        font-size: 1.15rem;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-</style>

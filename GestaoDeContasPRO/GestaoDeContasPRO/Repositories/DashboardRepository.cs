@@ -26,11 +26,13 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Open();
 
                     const string query = @"SELECT
-                                            COALESCE(SUM(e.amount), 0) AS amount,
+                                            ROUND(COALESCE(SUM(e.amount), 0),2) AS amount,
+                                            c.budget, 
+                                            COALESCE(ROUND((COALESCE(SUM(e.amount), 0) / c.budget) * 100, 0),0) AS budget_coverage,
                                             c.id AS category_id,
                                             c.name AS category_name,
                                             c.action_type AS category_type
-
+                                            
                                         FROM categories c
 
                                         INNER JOIN profiles p
@@ -79,6 +81,8 @@ namespace GestaoDeContasPRO.Repositories
                                             Id = (int)dr["category_id"],
                                             Name = (string)dr["category_name"],
                                             Type = Enum.Parse<ActionType>(dr["category_type"].ToString()!),
+                                            Budget = Convert.ToDouble(dr["budget"]),
+                                            BudgetCoverage = Convert.ToDouble(dr["budget_coverage"])
                                         },
                                         Amount = Convert.ToDouble(dr["amount"])
                                     });
