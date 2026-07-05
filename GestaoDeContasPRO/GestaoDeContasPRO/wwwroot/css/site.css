@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 16px;
 }
 
@@ -184,4 +184,50 @@ input[type="date"] {
 .stats-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.25);
+}
+
+.summary-card {
+    background: #2b303b;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+}
+
+.summary-title {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.summary-value {
+    margin-top: 4px;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.summary-credit::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid #28a745;
+}
+
+.summary-debit::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 7px solid #dc3545;
+}
+
+.summary-balance::after {
+    content: "≡";
+    color: #0dcaf0;
+    font-size: .95rem;
 }

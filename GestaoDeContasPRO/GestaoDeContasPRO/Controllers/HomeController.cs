@@ -52,12 +52,24 @@ namespace GestaoDeContasPRO.Controllers
                 List<Entry> entriesAmount = new List<Entry>();
                 _dashRepo.GetEntriesAmountByCategory(ref entriesAmount, profileId ?? 0, startDate, endDate, currentUser.Id, ref error);
 
+                double credit = entriesAmount
+                   .Where(e => e.Category.Type == ActionType.CREDIT)
+                   .Sum(e => e.Amount);
+
+                double debit = entriesAmount
+                    .Where(e => e.Category.Type == ActionType.DEBIT)
+                    .Sum(e => e.Amount);
+
+                double balance = credit - debit;
 
                 model.profiles = profiles;
                 model.profileId = profileId;
                 model.startDate = startDate?.ToString("yyyy-MM-dd");
                 model.endDate = endDate?.ToString("yyyy-MM-dd");
                 model.entriesAmount = entriesAmount;
+                model.credit = credit;
+                model.debit = debit;
+                model.balance = balance;
             }
 
             model.error = error;

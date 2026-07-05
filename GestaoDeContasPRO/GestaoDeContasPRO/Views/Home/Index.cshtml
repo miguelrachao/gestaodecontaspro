@@ -66,6 +66,37 @@
 
             </form>
 
+
+            <div class="row g-2 mb-3">
+
+                <div class="col-4">
+                    <div class="summary-card">
+                        <small class="summary-title stats-category summary-credit">Créditos</small>
+                        <div class="stats-value">
+                            @Model.credit €
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="summary-card">
+                        <small class="summary-title stats-category summary-debit">Débitos</small>
+                        <div class="stats-value">
+                            @Model.debit €
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="summary-card">
+                        <small class="summary-title stats-category summary-balance">Balanço</small>
+                        <div class="stats-value">
+                            @Model.balance €
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-2">
 
                 @foreach (Entry entry in Model.entriesAmount)
