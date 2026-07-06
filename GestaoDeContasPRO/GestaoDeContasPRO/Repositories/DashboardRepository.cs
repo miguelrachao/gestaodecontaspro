@@ -104,5 +104,74 @@ namespace GestaoDeContasPRO.Repositories
                 _helpers.CreateLog("EntryRepository - GetEntriesAmountByCategory: " + ex.Message);
             }
         }
+
+        public void GetYearBalance(ref List<YearBalance> yearBalances, int profileId, string yearBalance, int userId, ref bool error)
+        {
+            error = false;
+
+            try
+            {
+                using (MySqlConnection Conn = new MySqlConnection(_connStr))
+                {
+                    Conn.Open();
+
+                    const string query = @"SELECT
+                                                MONTH(e.date) month,
+                                                SUM(CASE WHEN c.action_type = 'CREDIT' THEN e.amount ELSE 0 END) credit,
+                                                SUM(CASE WHEN c.action_type = 'DEBIT' THEN ABS(e.amount) ELSE 0 END) debit,
+                                                (SUM(CASE WHEN c.action_type = 'CREDIT' THEN e.amount ELSE 0 END)) - (SUM(CASE WHEN c.action_type = 'DEBIT' THEN ABS(e.amount) ELSE 0 END)) balance
+                                            FROM entries e
+
+                                            INNER JOIN profiles p ON p.id = e.profile_id
+                                            LEFT JOIN profile_shares ps ON ps.profile_id = @profileId AND ps.user_id = @userId
+                                            INNER JOIN users u ON u.id = p.user_id
+                                            INNER JOIN categories c ON c.id = e.category_id
+
+                                            WHERE p.id = @profileId 
+
+                                            AND YEAR(e.date)=@yearBalance
+
+                                            AND (p.user_id = @userId OR ps.user_id = @userId)
+
+                                            GROUP BY MONTH(e.date)
+                                            ORDER BY MONTH(e.date)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, Conn))
+                    {
+                        cmd.Parameters.AddWithValue("@profileId", profileId);
+                        cmd.Parameters.AddWithValue("@yearBalance", yearBalance);
+                        cmd.Parameters.AddWithValue("@userId", userId);
+
+                        using (MySqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                while (dr.Read())
+                                {
+                                    yearBalances.Add(new YearBalance()
+                                    {
+                                        Month = (int)dr["Month"],
+                                        Credit = Convert.ToDouble(dr["Credit"]),
+                                        Debit = Convert.ToDouble(dr["Debit"]),
+                                        Balance = Convert.ToDouble(dr["Balance"])
+                                    });
+                                }
+
+                                dr.Close();
+
+                            }
+                        }
+                    }
+
+                    Conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                error = true;
+
+                _helpers.CreateLog("EntryRepository - GetYearBalance: " + ex.Message);
+            }
+        }
     }
 }

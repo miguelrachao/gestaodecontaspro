@@ -52,6 +52,9 @@ namespace GestaoDeContasPRO.Controllers
                 List<Entry> entriesAmount = new List<Entry>();
                 _dashRepo.GetEntriesAmountByCategory(ref entriesAmount, profileId ?? 0, startDate, endDate, currentUser.Id, ref error);
 
+                List<YearBalance> yearBalances = new List<YearBalance>();
+                _dashRepo.GetYearBalance(ref yearBalances, profileId ?? 0, startDate?.ToString("yyyy") ?? DateTime.UtcNow.Year.ToString(), currentUser.Id, ref error);
+
                 double credit = entriesAmount
                    .Where(e => e.Category.Type == ActionType.CREDIT)
                    .Sum(e => e.Amount);
@@ -70,6 +73,7 @@ namespace GestaoDeContasPRO.Controllers
                 model.credit = credit;
                 model.debit = debit;
                 model.balance = balance;
+                model.yearBalances = yearBalances;
             }
 
             model.error = error;
