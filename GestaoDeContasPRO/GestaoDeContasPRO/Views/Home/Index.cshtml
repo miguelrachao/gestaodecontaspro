@@ -74,7 +74,7 @@
                     <div class="summary-card">
                         <small class="summary-title stats-category summary-credit">Créditos</small>
                         <div class="stats-value">
-                            @Model.credit €
+                            @Model.credit.ToString("N2", new CultureInfo("pt-PT")) €
                         </div>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                     <div class="summary-card">
                         <small class="summary-title stats-category summary-debit">Débitos</small>
                         <div class="stats-value">
-                            @Model.debit €
+                            @Model.debit.ToString("N2", new CultureInfo("pt-PT")) €
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                     <div class="summary-card">
                         <small class="summary-title stats-category summary-balance">Balanço</small>
                         <div class="stats-value">
-                            @Model.balance €
+                            @Model.balance.ToString("N2", new CultureInfo("pt-PT")) €
                         </div>
                     </div>
                 </div>
