@@ -12,7 +12,7 @@
             if (User?.Identity?.IsAuthenticated == false)
             {
                 <li class="nav-item">
-                    <a class="nav-link @(currentAction == "About" ? "active fw-bold" : "") asp-area="" asp-controller="Home" asp-action="About">Sobre</a>
+                    <a class="nav-link @(currentAction == "About" ? "active fw-bold" : "")" asp-area="" asp-controller="Home" asp-action="About">Sobre</a>
                 </li>
             }
             else
