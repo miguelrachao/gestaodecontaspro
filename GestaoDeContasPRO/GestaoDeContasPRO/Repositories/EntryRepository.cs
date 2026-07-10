@@ -2,6 +2,7 @@
 using GestaoDeContasPRO.Services;
 using Microsoft.AspNetCore.Authorization;
 using MySql.Data.MySqlClient;
+using System.Data.Common;
 
 namespace GestaoDeContasPRO.Repositories
 {
@@ -60,11 +61,11 @@ namespace GestaoDeContasPRO.Repositories
                                         Category =
                                         {
                                             Id = (int)dr["category_id"],
-                                            Name = (string)dr["category_name"],
+                                            Name = dr["category_name"] == DBNull.Value ? string.Empty : (string)dr["category_name"],
                                             Type = Enum.Parse<ActionType>(dr["category_type"].ToString()!),
                                         },
                                         Amount = Convert.ToDouble(dr["amount"]),
-                                        Description = (string)dr["description"],
+                                        Description = dr["description"] == DBNull.Value ? string.Empty : (string)dr["description"],
                                         Date = (DateTime)dr["Date"]
                                     });
                                 }
@@ -120,11 +121,11 @@ namespace GestaoDeContasPRO.Repositories
                                 entry.Category = new Category
                                 {
                                     Id = (int)dr["category_id"],
-                                    Name = (string)dr["category_name"],
+                                    Name = dr["category_name"] == DBNull.Value ? string.Empty : (string)dr["category_name"],
                                     Type = Enum.Parse<ActionType>(dr["category_type"].ToString()!),
                                 };
                                 entry.Amount = Convert.ToDouble(dr["amount"]);
-                                entry.Description = (string)dr["description"];
+                                entry.Description = dr["description"] == DBNull.Value ? string.Empty : (string)dr["description"];
                                 entry.Date = (DateTime)dr["Date"];
 
                                 dr.Close();
@@ -170,7 +171,7 @@ namespace GestaoDeContasPRO.Repositories
                         cmd.Parameters.AddWithValue("@profile_id", entry.ProfileId);
                         cmd.Parameters.AddWithValue("@category_id", entry.Category.Id);
                         cmd.Parameters.AddWithValue("@amount", entry.Amount);
-                        cmd.Parameters.AddWithValue("@description", entry.Description);
+                        cmd.Parameters.AddWithValue("@description", entry.Description == null ? string.Empty : entry.Description);
                         cmd.Parameters.AddWithValue("@date", entry.Date);
 
                         int rows = cmd.ExecuteNonQuery();
@@ -218,7 +219,7 @@ namespace GestaoDeContasPRO.Repositories
                         cmd.Parameters.AddWithValue("@id", entry.Id);
                         cmd.Parameters.AddWithValue("@category_id", entry.Category.Id);
                         cmd.Parameters.AddWithValue("@amount", entry.Amount);
-                        cmd.Parameters.AddWithValue("@description", entry.Description);
+                        cmd.Parameters.AddWithValue("@description", entry.Description == null ? string.Empty : entry.Description);
                         cmd.Parameters.AddWithValue("@date", entry.Date);
 
                         int rows = cmd.ExecuteNonQuery();

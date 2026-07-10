@@ -48,7 +48,7 @@ namespace GestaoDeContasPRO.Repositories
                             {
                                 dr.Read();
 
-                                profile.Name = dr["name"].ToString() ?? string.Empty;
+                                profile.Name = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"];
                                 profile.UserName = dr["user_name"].ToString() ?? string.Empty;
                                 profile.Active = Convert.ToBoolean(dr["active"]);
                                 profile.Favorite = Convert.ToBoolean(dr["Favorite"]);
@@ -184,7 +184,7 @@ namespace GestaoDeContasPRO.Repositories
                                     profileShares.Add(new ProfileShare()
                                     {
                                         Id = (int)dr["id"],
-                                        UserName = (string)dr["name"],
+                                        UserName = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"],
                                         DateLog = dr["date_log"] == DBNull.Value ? null: (DateTime)dr["date_log"]
                                     });
                                 }
@@ -220,7 +220,7 @@ namespace GestaoDeContasPRO.Repositories
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
-                        cmd.Parameters.AddWithValue("@name", profile.Name);
+                        cmd.Parameters.AddWithValue("@name", profile.Name == null ? string.Empty : profile.Name);
                         cmd.Parameters.AddWithValue("@user_id", profile.UserId);
                         cmd.Parameters.AddWithValue("@active", profile.Active);
 
@@ -267,7 +267,7 @@ namespace GestaoDeContasPRO.Repositories
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
-                        cmd.Parameters.AddWithValue("@name", profile.Name);
+                        cmd.Parameters.AddWithValue("@name", profile.Name == null ? string.Empty : profile.Name);
                         cmd.Parameters.AddWithValue("@active", profile.Active);
                         cmd.Parameters.AddWithValue("@userId", profile.UserId);
                         cmd.Parameters.AddWithValue("@id", profile.Id);

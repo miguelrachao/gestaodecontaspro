@@ -26,40 +26,53 @@ namespace GestaoDeContasPRO.Repositories
                     Conn.Open();
 
                     const string query = @"SELECT
-                                            ROUND(COALESCE(SUM(e.amount), 0),2) AS amount,
-                                            c.budget, 
-                                            COALESCE(ROUND((COALESCE(SUM(e.amount), 0) / c.budget) * 100, 0),0) AS budget_coverage,
-                                            c.id AS category_id,
-                                            c.name AS category_name,
-                                            c.action_type AS category_type
-                                            
-                                        FROM categories c
+                                                ROUND(COALESCE(SUM(e.amount), 0), 2) AS amount,
 
-                                        INNER JOIN profiles p
-                                            ON p.id = c.profile_id
+                                                (c.budget * (TIMESTAMPDIFF(MONTH, DATE(@startDate), DATE(@endDate)) + 1)) AS budget,
 
-                                        LEFT JOIN profile_shares ps
-                                            ON ps.profile_id = p.id
-                                            AND ps.user_id = @userId
+                                                COALESCE(
+                                                    ROUND(
+                                                        (
+                                                            COALESCE(SUM(e.amount), 0)
+                                                            /
+                                                            (c.budget * (TIMESTAMPDIFF(MONTH, DATE(@startDate), DATE(@endDate)) + 1))
+                                                        ) * 100,
+                                                        0
+                                                    ),
+                                                    0
+                                                ) AS budget_coverage,
 
-                                        LEFT JOIN entries e
-                                            ON e.category_id = c.id
-                                            AND e.profile_id = p.id
-                                            AND DATE(e.date) >= DATE(@startDate)
-                                            AND DATE(e.date) <= DATE(@endDate)
+                                                c.id AS category_id,
+                                                c.name AS category_name,
+                                                c.action_type AS category_type
 
-                                        WHERE
-                                            c.profile_id = @profileId
-                                            AND (p.user_id = @userId OR ps.user_id = @userId)
+                                            FROM categories c
 
-                                        GROUP BY
-                                            c.id,
-                                            c.name,
-                                            c.action_type
+                                            INNER JOIN profiles p
+                                                ON p.id = c.profile_id
 
-                                        ORDER BY
-                                            c.action_type DESC,
-                                            c.name ASC";
+                                            LEFT JOIN profile_shares ps
+                                                ON ps.profile_id = p.id
+                                                AND ps.user_id = @userId
+
+                                            LEFT JOIN entries e
+                                                ON e.category_id = c.id
+                                                AND e.profile_id = p.id
+                                                AND DATE(e.date) >= DATE(@startDate)
+                                                AND DATE(e.date) <= DATE(@endDate)
+
+                                            WHERE
+                                                c.profile_id = @profileId
+                                                AND (p.user_id = @userId OR ps.user_id = @userId)
+
+                                            GROUP BY
+                                                c.id,
+                                                c.name,
+                                                c.action_type
+
+                                            ORDER BY
+                                                c.action_type DESC,
+                                                c.name ASC;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
@@ -79,7 +92,7 @@ namespace GestaoDeContasPRO.Repositories
                                         Category =
                                         {
                                             Id = (int)dr["category_id"],
-                                            Name = (string)dr["category_name"],
+                                            Name = dr["category_name"] == DBNull.Value ? string.Empty : (string)dr["category_name"],
                                             Type = Enum.Parse<ActionType>(dr["category_type"].ToString()!),
                                             Budget = Convert.ToDouble(dr["budget"]),
                                             BudgetCoverage = Convert.ToDouble(dr["budget_coverage"])

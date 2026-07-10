@@ -1,0 +1,15 @@
+7/10/2026 8:49:16 PM EntryRepository - GetProfileEntries: Unable to cast object of type 'System.DBNull' to type 'System.String'.
+
+
+7/10/2026 8:49:20 PM EntryRepository - GetProfileEntries: Unable to cast object of type 'System.DBNull' to type 'System.String'.
+
+
+7/10/2026 8:54:00 PM EntryRepository - GetProfileEntries: Unable to cast object of type 'System.DBNull' to type 'System.String'.
+
+
+7/10/2026 9:52:30 PM UserRepository - GetProfileShares: Could not find specified column in results: user_name
+
+
+7/10/2026 9:52:35 PM UserRepository - GetProfileShares: Could not find specified column in results: user_name
+
+

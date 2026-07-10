@@ -41,8 +41,8 @@ namespace GestaoDeContasPRO.Repositories
                                 dr.Read();
 
                                 user.Id = (int)dr["id"];
-                                user.Name = dr["name"].ToString() ?? string.Empty;
-                                user.Email = dr["email"].ToString() ?? string.Empty;
+                                user.Name = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"];
+                                user.Email = dr["email"]== DBNull.Value ? string.Empty : (string)dr["email"];
                                 user.FavoriteProfileId = (int)dr["favorite_profile_id"];
 
                                 dr.Close();
@@ -89,7 +89,7 @@ namespace GestaoDeContasPRO.Repositories
                                 dr.Read();
 
                                 user.Id = (int)dr["id"];
-                                user.Name = dr["name"].ToString() ?? string.Empty;
+                                user.Name = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"];
                                 user.FavoriteProfileId = (int)dr["favorite_profile_id"];
                             
                                 dr.Close();
@@ -126,7 +126,7 @@ namespace GestaoDeContasPRO.Repositories
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
-                        cmd.Parameters.AddWithValue("@name", user.Name);
+                        cmd.Parameters.AddWithValue("@name", user.Name == null ? string.Empty : user.Name);
                         cmd.Parameters.AddWithValue("@email", user.Email);
 
                         cmd.ExecuteScalar();
@@ -161,7 +161,7 @@ namespace GestaoDeContasPRO.Repositories
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
                         cmd.Parameters.AddWithValue("@id", user.Id);
-                        cmd.Parameters.AddWithValue("@name", user.Name);
+                        cmd.Parameters.AddWithValue("@name", user.Name == null ? string.Empty : user.Name);
                         
 
                         cmd.ExecuteScalar();
@@ -273,7 +273,7 @@ namespace GestaoDeContasPRO.Repositories
                                 dr.Read();
 
                                 user.Id = (int)dr["id"];
-                                user.Name = dr["name"].ToString() ?? string.Empty;
+                                user.Name = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"];
                                 user.FavoriteProfileId = (int)dr["favorite_profile_id"];
 
                                 dr.Close();

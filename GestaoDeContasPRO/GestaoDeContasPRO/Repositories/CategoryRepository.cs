@@ -44,7 +44,7 @@ namespace GestaoDeContasPRO.Repositories
                                     categories.Add(new Category()
                                     {
                                         Id = (int)dr["id"],
-                                        Name = dr["name"].ToString() ?? string.Empty,
+                                        Name = dr["name"] == DBNull.Value ? string.Empty : (string)dr["name"],
                                         Type = Enum.Parse<ActionType>(dr["action_type"].ToString()!),
                                         Budget = Convert.ToDouble(dr["budget"]),
                                         UserId = (int)dr["user_id"],
@@ -84,7 +84,7 @@ namespace GestaoDeContasPRO.Repositories
 
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
-                        cmd.Parameters.AddWithValue("@name", category.Name);
+                        cmd.Parameters.AddWithValue("@name", category.Name == null ? string.Empty : category.Name);
                         cmd.Parameters.AddWithValue("@action_type", category.Type.ToString());
                         cmd.Parameters.AddWithValue("@budget", category.Budget);
                         cmd.Parameters.AddWithValue("@user_id", category.UserId);
@@ -131,7 +131,7 @@ namespace GestaoDeContasPRO.Repositories
                     using (MySqlCommand cmd = new MySqlCommand(query, Conn))
                     {
                         cmd.Parameters.AddWithValue("@id", category.Id);
-                        cmd.Parameters.AddWithValue("@name", category.Name);
+                        cmd.Parameters.AddWithValue("@name", category.Name == null ? string.Empty : category.Name);
                         cmd.Parameters.AddWithValue("@actionType", category.Type.ToString());
                         cmd.Parameters.AddWithValue("@budget", category.Budget);
                         cmd.Parameters.AddWithValue("@active", category.Active);

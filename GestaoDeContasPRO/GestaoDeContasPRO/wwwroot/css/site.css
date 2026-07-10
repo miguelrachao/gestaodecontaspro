@@ -160,11 +160,11 @@ input[type="date"] {
 
 .stats-value {
     color: #fff;
-    font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.2;
     margin-top: .25rem;
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    font-size: clamp(1rem, 3vw, 1.15rem);
 }
 
 .progress {
