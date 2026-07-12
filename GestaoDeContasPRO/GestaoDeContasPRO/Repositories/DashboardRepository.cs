@@ -28,6 +28,16 @@ namespace GestaoDeContasPRO.Repositories
                     const string query = @"SELECT
                                                 ROUND(COALESCE(SUM(e.amount), 0), 2) AS amount,
 
+                                                CASE
+                                                    WHEN (TIMESTAMPDIFF(MONTH, DATE(@startDate), DATE(@endDate)) + 1) > 1 THEN
+                                                        ROUND(
+                                                            COALESCE(SUM(e.amount), 0) /
+                                                            (TIMESTAMPDIFF(MONTH, DATE(@startDate), DATE(@endDate)) + 1),
+                                                            2
+                                                        )
+                                                    ELSE 0
+                                                END AS average_amount,
+
                                                 (c.budget * (TIMESTAMPDIFF(MONTH, DATE(@startDate), DATE(@endDate)) + 1)) AS budget,
 
                                                 COALESCE(
@@ -97,7 +107,8 @@ namespace GestaoDeContasPRO.Repositories
                                             Budget = Convert.ToDouble(dr["budget"]),
                                             BudgetCoverage = Convert.ToDouble(dr["budget_coverage"])
                                         },
-                                        Amount = Convert.ToDouble(dr["amount"])
+                                        Amount = Convert.ToDouble(dr["amount"]),
+                                        AverageAmount = Convert.ToDouble(dr["average_amount"])
                                     });
                                 }
 

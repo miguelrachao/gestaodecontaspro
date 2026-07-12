@@ -120,8 +120,18 @@
                                     @entry.Category.Name
                                 </div>
 
-                                <div class="stats-value">
-                                    @entry.Amount.ToString("N2", new CultureInfo("pt-PT")) €
+                                <div>
+                                    <div class="stats-value">
+                                        @entry.Amount.ToString("N2", new CultureInfo("pt-PT")) €
+                                    </div>
+                                    @{
+                                        if (entry.AverageAmount > 0)
+                                        {
+                                            <div class="stats-value" style="font-size: 9pt;">
+                                                Média: @entry.AverageAmount.ToString("N2", new CultureInfo("pt-PT")) €
+                                            </div>
+                                        }
+                                    }
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center mt-2">
