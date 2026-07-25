@@ -26,6 +26,7 @@ jobs:
           docker pull mcr.microsoft.com/dotnet/sdk:8.0
 
       - name: Construir imagem Docker
+        working-directory: GestaoDeContasPRO
         run: |
           docker build \
             --pull \
