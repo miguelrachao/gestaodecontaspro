@@ -1,0 +1,73 @@
+name: Deploy Produção
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy para Raspberry Pi
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Atualizar imagens base do .NET
+        run: |
+          docker pull mcr.microsoft.com/dotnet/aspnet:8.0
+          docker pull mcr.microsoft.com/dotnet/sdk:8.0
+
+      - name: Construir imagem Docker
+        run: |
+          docker build \
+            --pull \
+            -t gestaodecontaspro-app .
+
+      - name: Verificar imagem criada
+        run: |
+          docker image inspect gestaodecontaspro-app
+
+      - name: Parar contentor atual
+        run: |
+          docker stop gestaodecontaspro-app || true
+          docker rm gestaodecontaspro-app || true
+
+      - name: Iniciar nova versão
+        run: |
+          docker run -d \
+            --name gestaodecontaspro-app \
+            --restart unless-stopped \
+            --network mrserver-network \
+            -e ConnectionStrings__DefaultConnection="$GESTAODECONTASPRO_DB_CONNECTION" \
+            -e SmtpSettings__SmtpServer="$GESTAODECONTASPRO_SMTP_SERVER" \
+            -e SmtpSettings__SmtpPort="$GESTAODECONTASPRO_SMTP_PORT" \
+            -e SmtpSettings__User="$GESTAODECONTASPRO_SMTP_USER" \
+            -e SmtpSettings__Password="$GESTAODECONTASPRO_SMTP_PW" \
+            gestaodecontaspro-app
+
+      - name: Aguardar arranque da aplicação
+        run: |
+          sleep 5
+
+      - name: Confirmar que o contentor está em execução
+        run: |
+          docker ps \
+            --filter "name=gestaodecontaspro-app" \
+            --filter "status=running" \
+            | grep gestaodecontaspro-app
+
+      - name: Limpar imagens antigas
+        run: |
+          docker image prune -f
+
+      - name: Estado final
+        run: |
+          docker ps
