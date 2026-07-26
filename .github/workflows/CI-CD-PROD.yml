@@ -20,11 +20,6 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Atualizar imagens base do .NET
-        run: |
-          docker pull mcr.microsoft.com/dotnet/aspnet:8.0
-          docker pull mcr.microsoft.com/dotnet/sdk:8.0
-
       - name: Construir imagem Docker
         working-directory: GestaoDeContasPRO/GestaoDeContasPRO
         run: |
@@ -65,10 +60,17 @@ jobs:
             --filter "status=running" \
             | grep gestaodecontaspro-app
 
-      - name: Limpar imagens antigas
+      - name: Limpar imagens e cache
         run: |
           docker image prune -f
+          docker builder prune -f
+          docker system df
 
       - name: Estado final
         run: |
+          echo "=== Contentores em execução ==="
           docker ps
+
+          echo ""
+          echo "=== Espaço em disco ==="
+          df -h
