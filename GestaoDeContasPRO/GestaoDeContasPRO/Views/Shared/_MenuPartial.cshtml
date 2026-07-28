@@ -1,6 +1,8 @@
-﻿@{
+﻿@using System.Reflection
+@{
     var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
     var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+    var version = Assembly.GetExecutingAssembly().GetName().Version;
 }
 
 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -46,6 +48,7 @@
                     <ul class="dropdown-menu">
                         <li class="ms-2"><a class="nav-link" asp-controller="Account" asp-action="Details">Conta</a></li>
                         <li class="ms-2"><a class="nav-link" asp-controller="Account" asp-action="Logout">Sair</a></li>
+                        <li class="ms-2"><span class="nav-link">Versão @($"{version!.Major}.{version.Minor}.{version.Build}")</span></li>
                     </ul>
                 </li>
             </ul>

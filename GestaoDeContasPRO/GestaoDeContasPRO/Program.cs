@@ -2,6 +2,7 @@ using GestaoDeContasPRO.Models;
 using GestaoDeContasPRO.Repositories;
 using GestaoDeContasPRO.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
@@ -22,7 +23,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
+        options.ExpireTimeSpan = TimeSpan.FromDays(180);
+        options.SlidingExpiration = true;
     });
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/keys"))
+    .SetApplicationName("GestaoDeContasPRO");
 
 builder.Services.AddAuthorization();
 
@@ -30,7 +37,6 @@ var culture = new CultureInfo("en-US");
 
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
-
 
 var app = builder.Build();
 
