@@ -1,9 +1,10 @@
-# Fase base (runtime)
+# ==========================================
+# Runtime
+# ==========================================
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
 USER root
 
-# Configuração do fuso horário
 ENV TZ=Europe/Lisbon
 
 RUN apt-get update \
@@ -15,43 +16,43 @@ RUN apt-get update \
 WORKDIR /app
 
 ENV ASPNETCORE_HTTP_PORTS=80
+
 EXPOSE 80
 
-# Volta a utilizar o utilizador da aplicação
+# Executar como utilizador não privilegiado
 USER $APP_UID
 
-# Fase de compilação
+# ==========================================
+# Build
+# ==========================================
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 ARG BUILD_CONFIGURATION=Release
 
 WORKDIR /src
 
+# Copia apenas o ficheiro do projeto para aproveitar a cache
 COPY ["GestaoDeContasPRO.csproj", "./"]
 
+# Restaura dependências
 RUN dotnet restore "GestaoDeContasPRO.csproj"
 
+# Copia o restante código
 COPY . .
 
-RUN dotnet build "GestaoDeContasPRO.csproj" \
-    -c $BUILD_CONFIGURATION \
-    -o /app/build
-
-# Fase de publicação
-FROM build AS publish
-
-ARG BUILD_CONFIGURATION=Release
-
+# Publica a aplicação (já inclui a compilação)
 RUN dotnet publish "GestaoDeContasPRO.csproj" \
     -c $BUILD_CONFIGURATION \
     -o /app/publish \
     /p:UseAppHost=false
 
-# Fase final
+# ==========================================
+# Final
+# ==========================================
 FROM base AS final
 
 WORKDIR /app
 
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 
 ENTRYPOINT ["dotnet", "GestaoDeContasPRO.dll"]
