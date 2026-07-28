@@ -49,6 +49,7 @@ jobs:
             --name gestaodecontaspro-app \
             --restart unless-stopped \
             --network mrserver-network \
+            -v /opt/gestaodecontaspro/keys:/keys \
             -e ConnectionStrings__DefaultConnection="$GESTAODECONTASPRO_DB_CONNECTION" \
             -e SmtpSettings__SmtpServer="$GESTAODECONTASPRO_SMTP_SERVER" \
             -e SmtpSettings__SmtpPort="$GESTAODECONTASPRO_SMTP_PORT" \
