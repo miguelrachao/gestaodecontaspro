@@ -1,0 +1,44 @@
+name: Test Docker Environment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-env:
+    runs-on: self-hosted
+
+    env:
+      GESTAODECONTASPRO_DB_CONNECTION: ${{ secrets.GESTAODECONTASPRO_DB_CONNECTION }}
+      GESTAODECONTASPRO_SMTP_SERVER: ${{ secrets.GESTAODECONTASPRO_SMTP_SERVER }}
+      GESTAODECONTASPRO_SMTP_PORT: ${{ secrets.GESTAODECONTASPRO_SMTP_PORT }}
+      GESTAODECONTASPRO_SMTP_USER: ${{ secrets.GESTAODECONTASPRO_SMTP_USER }}
+      GESTAODECONTASPRO_SMTP_PW: ${{ secrets.GESTAODECONTASPRO_SMTP_PW }}
+
+    steps:
+      - name: Check environment variables
+        shell: bash
+        run: |
+          echo "=== Checking variables ==="
+
+          [ -n "$GESTAODECONTASPRO_DB_CONNECTION" ] && echo "DB_CONNECTION: OK" || echo "DB_CONNECTION: EMPTY"
+          [ -n "$GESTAODECONTASPRO_SMTP_SERVER" ] && echo "SMTP_SERVER: OK" || echo "SMTP_SERVER: EMPTY"
+          [ -n "$GESTAODECONTASPRO_SMTP_PORT" ] && echo "SMTP_PORT: $GESTAODECONTASPRO_SMTP_PORT" || echo "SMTP_PORT: EMPTY"
+          [ -n "$GESTAODECONTASPRO_SMTP_USER" ] && echo "SMTP_USER: OK" || echo "SMTP_USER: EMPTY"
+          [ -n "$GESTAODECONTASPRO_SMTP_PW" ] && echo "SMTP_PASSWORD: OK" || echo "SMTP_PASSWORD: EMPTY"
+
+          echo ""
+          echo "=== Docker receives ==="
+
+          docker run --rm \
+            -e ConnectionStrings__DefaultConnection="$GESTAODECONTASPRO_DB_CONNECTION" \
+            -e SmtpSettings__SmtpServer="$GESTAODECONTASPRO_SMTP_SERVER" \
+            -e SmtpSettings__SmtpPort="$GESTAODECONTASPRO_SMTP_PORT" \
+            -e SmtpSettings__User="$GESTAODECONTASPRO_SMTP_USER" \
+            -e SmtpSettings__Password="$GESTAODECONTASPRO_SMTP_PW" \
+            alpine:latest sh -c '
+              echo "ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection:+SET}"
+              echo "SmtpSettings__SmtpServer=$SmtpSettings__SmtpServer"
+              echo "SmtpSettings__SmtpPort=$SmtpSettings__SmtpPort"
+              echo "SmtpSettings__User=${SmtpSettings__User:+SET}"
+              echo "SmtpSettings__Password=${SmtpSettings__Password:+SET}"
+            '
