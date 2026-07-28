@@ -31,14 +31,14 @@ jobs:
         working-directory: GestaoDeContasPRO/GestaoDeContasPRO
         run: |
           docker build \
-            --pull \
+            --rm \
             -t gestaodecontaspro-app .
 
       - name: Verificar imagem criada
         run: |
           docker image inspect gestaodecontaspro-app
 
-      - name: Parar contentor atual
+      - name: Parar e remover contentor atual
         run: |
           docker stop gestaodecontaspro-app || true
           docker rm gestaodecontaspro-app || true
@@ -68,10 +68,10 @@ jobs:
             --filter "status=running" \
             | grep gestaodecontaspro-app
 
-      - name: Limpar imagens e cache
+      - name: Limpar recursos não utilizados
         run: |
           docker image prune -f
-          docker builder prune -f
+          docker container prune -f
           docker system df
 
       - name: Estado final
