@@ -16,6 +16,13 @@ jobs:
     name: Deploy Produção
     runs-on: self-hosted
 
+    env:
+      GESTAODECONTASPRO_DB_CONNECTION: ${{ secrets.GESTAODECONTASPRO_DB_CONNECTION }}
+      GESTAODECONTASPRO_SMTP_SERVER: ${{ secrets.GESTAODECONTASPRO_SMTP_SERVER }}
+      GESTAODECONTASPRO_SMTP_PORT: ${{ secrets.GESTAODECONTASPRO_SMTP_PORT }}
+      GESTAODECONTASPRO_SMTP_USER: ${{ secrets.GESTAODECONTASPRO_SMTP_USER }}
+      GESTAODECONTASPRO_SMTP_PW: ${{ secrets.GESTAODECONTASPRO_SMTP_PW }}
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
