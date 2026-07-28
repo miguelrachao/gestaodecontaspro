@@ -1,4 +1,10 @@
-﻿<div class="d-flex justify-content-center">
+﻿@using System.Reflection
+
+@{
+    var version = Assembly.GetExecutingAssembly().GetName().Version;
+}
+
+<div class="d-flex justify-content-center">
     <div class="w-100 p-5" style="max-width: 600px;">
         <h5>Gestão de Contas - Gestão de finanças pessoais</h5>
         <p>Aplicação WEB para gestão de contas mensais.</p>
@@ -9,6 +15,6 @@
             <li>organização de contas por categorias;</li>
             <li>visualização de estatísticas de contas.</li>
         </ul>
-        <p>Versão 2.1.0</p>
+        <p>Versão @($"{version!.Major}.{version.Minor}.{version.Build}")</p>
     </div>
 </div> 

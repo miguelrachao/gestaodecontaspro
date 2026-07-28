@@ -62,13 +62,10 @@ namespace GestaoDeContasPRO.Controllers
                             var claimsIdentity = new ClaimsIdentity(
                                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-
                             var authProperties = new AuthenticationProperties
                             {
-                                IsPersistent = true,
-                                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(180)
+                                IsPersistent = true
                             };
-
 
                             await HttpContext.SignInAsync(
                                 CookieAuthenticationDefaults.AuthenticationScheme,
