@@ -184,7 +184,7 @@
                     <div class="row">
                         <div class="col">
                             <label for="ActionType" class="fw-bold" style="margin-bottom:-10px;">Tipo</label>
-                            <select class="form-select form-control" name="Type">
+                            <select class="form-select form-control" name="Type" style="margin-bottom:10px;">
                                 <option value="">Selecionar</option>
                                 @foreach (ActionType actionType in Enum.GetValues<ActionType>())
                                 {
@@ -197,6 +197,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
+                            <label for="Name" class="fw-bold" style="margin-bottom:-10px;">Orçamento</label>
                             <input type="number" inputmode="decimal" id="Budget" name="Budget" class="form-control" step="0.01" value="0">
                         </div>
                     </div>
