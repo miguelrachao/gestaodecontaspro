@@ -5,14 +5,19 @@
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="d-inline">Registos</h5>
-        <a href="~/Entry/Add?profileId=@Model.profileId&categoryId=@Model.categoryId"><img src="~/img/add.png" style="width:28px;" class="ms-1" /></a>
+        @{
+            if (Model.profiles.Count > 0)
+            {
+                <a href="~/Entry/Add?profileId=@Model.profileId&categoryId=@Model.categoryId"><img src="~/img/add.png" style="width:28px;" class="ms-1" /></a>
+            }
+        }
     </div>
     <div class="card-body">
         @{
             if (Model.profiles.Count == 0)
             {
                 <div class="text-center">
-                    <h5 class="mt-5">Para começar, <a href="~/Profile/Add">adicione um perfil</a></h5>
+                    <h5 class="mt-5 mb-5">Para começar, <a href="~/Profile/Add">adicione um perfil</a></h5>
                 </div>
             }
             else
@@ -91,7 +96,10 @@
             }
             else
             {
-                <p class="p-4">Nenhum registo encontrado!</p>
+                if (Model.profiles.Count > 0)
+                {
+                    <p class="p-4">Nenhum registo encontrado!</p>
+                }
             }
         }
     </div>

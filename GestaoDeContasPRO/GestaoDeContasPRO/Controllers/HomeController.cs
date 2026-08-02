@@ -33,7 +33,7 @@ namespace GestaoDeContasPRO.Controllers
                 List<Profile> profiles = new List<Profile>();
                 _profileRepo.GetUserProfiles(ref profiles, currentUser.Id, active:true, ref error);
 
-                if(profileId == null)
+                if(profileId == null && profiles.Count > 0)
                 {
                     profileId = profiles.First().Id;
                 }

@@ -31,7 +31,7 @@ namespace GestaoDeContasPRO.Controllers
             List<Profile> profiles = new List<Profile>();
             _profileRepo.GetUserProfiles(ref profiles, currentUser.Id, active: true, ref error);
 
-            if (profileId == 0)
+            if (profileId == 0 && profiles.Count > 0)
             {
                 profileId = profiles.First().Id;
             }
@@ -97,6 +97,11 @@ namespace GestaoDeContasPRO.Controllers
 
             List<Profile> profiles = new List<Profile>();
             _profileRepo.GetUserProfiles(ref profiles, currentUser.Id, active: true, ref error);
+
+            if(profiles.Count == 0)
+            {
+                return RedirectToAction("Add", "Profile");
+            }
 
             if (profileId == 0)
             {
