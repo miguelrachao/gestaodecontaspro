@@ -59,25 +59,38 @@ jobs:
 
       - name: Aguardar arranque da aplicação
         run: |
-          sleep 5
+          sleep 10
 
       - name: Confirmar que o contentor está em execução
         run: |
-          docker ps \
+          if docker ps \
             --filter "name=gestaodecontaspro-app" \
             --filter "status=running" \
-            | grep gestaodecontaspro-app
+            | grep -q gestaodecontaspro-app; then
+            echo "Aplicação iniciada com sucesso."
+          else
+            echo "A aplicação não arrancou."
+            echo ""
+            echo "=== Logs da aplicação ==="
+            docker logs gestaodecontaspro-app || true
+            exit 1
+          fi
 
       - name: Limpar recursos não utilizados
         run: |
-          docker image prune -f
+          docker image prune -af
           docker container prune -f
+          docker builder prune -af
           docker system df
 
       - name: Estado final
         run: |
           echo "=== Contentores em execução ==="
           docker ps
+
+          echo ""
+          echo "=== Espaço Docker ==="
+          docker system df
 
           echo ""
           echo "=== Espaço em disco ==="
